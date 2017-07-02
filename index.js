@@ -35,4 +35,4 @@ client.on('ready', () => {
 client.on('presenceUpdate', presence_handler.handlePresenceUpdate);
 client.on('voiceStateUpdate', channel_handler.handleVoiceStateUpdate);
 
-client.login('MzMwMDgzODQ2NzQzNjU0NDAx.DDb8_A.Aq9f9KnUQq4Hu_oqVxxULnS5BUY');
+client.login(process.env.DISCORD_KEY);
