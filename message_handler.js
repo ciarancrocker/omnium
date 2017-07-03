@@ -1,3 +1,4 @@
+const moment = require('moment');
 const Table = require('ascii-table');
 const winston = require('winston');
 const db = require('./database');
@@ -25,7 +26,7 @@ module.exports.handleMessage = function(message) {
   if(message.content[0] == process.env.COMMAND_PREFIX)
   {
     winston.log('info', 'Handling command %s from %s', message.content, message.author.tag);
-    switch(message.content.slice(1))
+    switch(message.content.slice(1).split(' ')[0])
     {
       case 'gamestats':
         handleGameStatisticsMessage(message);
@@ -38,17 +39,55 @@ module.exports.handleMessage = function(message) {
 };
 
 function handleGameStatisticsMessage(message) {
-  winston.log('debug', 'handleGameStatisticsMessage');
-  db.raw(sqlFiles["top-five-games.sql"]).then(rows => {
+  let upperBound = 10;
+  let limit = 10;
+
+  const argv = message.content.split(' ');
+
+  if(argv[1] && parseInt(argv[1])) {
+    if(message.channel.type == 'dm') {
+      upperBound = 100;
+    }
+    limit = Math.min(argv[1], upperBound);
+  }
+
+  const sourceSql = sqlFiles["top-five-games.sql"];
+  const sql = sourceSql.toString().replace('{{limit}}', limit);
+  db.raw(sql).then(rows => {
     const table = new Table();
-    table.setHeading('Game', 'Time');
+    table.setHeading('Rank', 'Game', 'Time played');
+    let i = 1;
     rows[0].forEach(row => {
-      table.addRow(row.game, (row.time / 1000));
+      table.addRow(
+        i++,
+        row.game,
+        moment.duration(row.time, "seconds").humanize()
+      );
     });
-    message.reply(table.toString(), { code: true });
+    //message.reply(table.toString(), { code: true });
+    paginateMessage(message, table.toString());
   });
 }
 
 function handlePingMessage(message) {
   message.reply('pong');
 }
+
+function paginateMessage(message, textToSend) {
+  const limit = 2000;
+  if(textToSend.length <= limit) {
+    message.reply(textToSend, { code: true });
+    return;
+  }
+  let split = limit;
+  for(let i = limit; i > 0; i--) {
+    if(textToSend[i] == "\n") {
+      split = i;
+      break;
+    }
+  }
+  winston.log('info', 'Splitting at %s, string length: %s', split, textToSend.length);
+  message.reply(textToSend.slice(0, Math.min(split, textToSend.length)), { code: true });
+  paginateMessage(message, textToSend.slice(split));
+}
+

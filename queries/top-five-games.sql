@@ -1,6 +1,6 @@
 SELECT 
   A.game, 
-  SUM(B.timestamp - A.timestamp) AS time 
+  SUM(TIME_TO_SEC(TIMEDIFF(B.timestamp, A.timestamp))) AS time
 FROM 
   GameLog A, 
   GameLog B 
@@ -19,7 +19,13 @@ WHERE
       AND A.user_id = C.user_id 
       AND A.game = C.game
   )
+  AND A.game NOT IN (
+    SELECT
+      game
+    FROM
+      GameBlacklist
+  )
 GROUP BY A.game 
 ORDER BY time DESC
-LIMIT 5;
+LIMIT {{limit}};
 
