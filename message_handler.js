@@ -63,7 +63,7 @@ function handleGameStatisticsMessage(message) {
       table.addRow(
         i++,
         row.game,
-        moment.duration(row.time, "seconds").humanize()
+        capitalizeFirstLetter(moment.duration(row.time, "seconds").humanize())
       );
     });
     //message.reply(table.toString(), { code: true });
@@ -73,6 +73,10 @@ function handleGameStatisticsMessage(message) {
 
 function handlePingMessage(message) {
   message.reply('pong');
+}
+
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
 function paginateMessage(message, textToSend) {
