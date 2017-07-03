@@ -48,7 +48,9 @@ function handleGameStatisticsMessage(message) {
     if(message.channel.type == 'dm') {
       upperBound = 100;
     }
-    limit = Math.min(argv[1], upperBound);
+    if(parseInt(argv[1] > 0)) {
+      limit = Math.min(argv[1], upperBound);
+    }
   }
 
   const sourceSql = sqlFiles["top-five-games.sql"];
