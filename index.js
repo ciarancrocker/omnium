@@ -7,6 +7,7 @@ require('dotenv').config();
 
 const channel_handler = require('./channel_handler');
 const presence_handler = require('./presence_handler');
+const message_handler = require('./message_handler');
 
 winston.configure({
   transports: [
@@ -30,9 +31,11 @@ client.on('ready', () => {
       url: '',
     },
   });
+  winston.log('info', 'Using %s as prefix for commands', process.env.COMMAND_PREFIX);
 });
 
 client.on('presenceUpdate', presence_handler.handlePresenceUpdate);
 client.on('voiceStateUpdate', channel_handler.handleVoiceStateUpdate);
+client.on('message', message_handler.handleMessage);
 
 client.login(process.env.DISCORD_KEY);
