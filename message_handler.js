@@ -92,7 +92,6 @@ function paginateMessage(message, textToSend) {
       break;
     }
   }
-  winston.log('info', 'Splitting at %s, string length: %s', split, textToSend.length);
   message.reply(textToSend.slice(0, Math.min(split, textToSend.length)), { code: true });
   paginateMessage(message, textToSend.slice(split));
 }
