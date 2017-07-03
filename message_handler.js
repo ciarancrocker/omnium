@@ -48,7 +48,7 @@ function handleGameStatisticsMessage(message) {
     if(message.channel.type == 'dm') {
       upperBound = 100;
     }
-    if(parseInt(argv[1] > 0)) {
+    if(parseInt(argv[1]) > 0) {
       limit = Math.min(argv[1], upperBound);
     }
   }
