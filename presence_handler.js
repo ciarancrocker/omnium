@@ -1,39 +1,13 @@
 const winston = require('winston');
 
-const mariasql = require('mariasql');
-
-function setupDatabaseClient() {
-  let dbClient = new mariasql({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    db: process.env.DB_SCHEMA,
-  });
-  dbClient.on('error', resetDatabaseClient);
-  return dbClient;
-}
-
-function resetDatabaseClient(err) {
-  winston.log('error', 'Resetting database client due to error.', err);
-  dbClient.end();
-  dbClient.destroy();
-  dbClient = setupDatabaseClient();
-}
-
-let dbClient = setupDatabaseClient();
+const db = require('./database');
 
 function addEvent(user_id, game, event) {
-  dbClient.query(
-    'INSERT INTO GameLog (user_id, game, event) VALUES (:user_id, :game, :event)',
-    { user_id, game, event },
-    function(err) {
-      if (err) {
-        winston.log('error', 'Failed to log presence change event', err);
-      } else {
-        winston.log('debug', 'Logged presence change event', { user_id, game, event });
-      }
-    }
-  );
+  db('GameLog').insert({ user_id, game, event }).then(() => {
+    winston.log('debug', 'Logged presence change event', { user_id, game, event });
+  }).catch(err => {
+    winston.log('error', 'Failed to log presence change event, aborting', err);
+  });
 }
 
 function handlePresenceUpdate(before, after) {
