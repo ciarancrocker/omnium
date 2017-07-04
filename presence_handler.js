@@ -12,11 +12,11 @@ function addEvent(user_id, game, event) {
 
 function handlePresenceUpdate(before, after) {
   if(before.presence != after.presence || before.presence.game != after.presence.game) {
-    if(before.presence.game) {
+    if(before.presence.game && !before.presence.url) {
       winston.log('info', 'User %s stopped playing %s', before.user.tag, before.presence.game.name);
       addEvent(before.user.id, before.presence.game.name, 'end');
     }
-    if(after.presence.game) {
+    if(after.presence.game && !after.presence.url) {
       winston.log('info', 'User %s started playing %s', after.user.tag, after.presence.game.name);
       addEvent(after.user.id, after.presence.game.name, 'begin');
     }
