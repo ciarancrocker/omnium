@@ -27,9 +27,11 @@ client.on('ready', () => {
     status: 'online',
     afk: false,
     game: {
-      name: 'Big Brother',
+      name: '100% fresh dank memes',
       url: '',
     },
+  }).then(() => {
+    winston.log('info', 'Presence set.');
   });
   winston.log('info', 'Using %s as prefix for commands', process.env.COMMAND_PREFIX);
 });
