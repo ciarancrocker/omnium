@@ -62,7 +62,7 @@ function handleGameStatisticsMessage(message) {
     rows[0].forEach(row => {
       table.addRow(
         i++,
-        row.game,
+        row.name,
         capitalizeFirstLetter(moment.duration(row.time, "seconds").humanize())
       );
     });
