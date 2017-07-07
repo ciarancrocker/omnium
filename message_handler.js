@@ -4,6 +4,7 @@ const winston = require('winston');
 const db = require('./database');
 
 const fs = require('fs');
+const db_helpers = require('./database_helpers');
 
 const sqlFiles = {};
 
@@ -42,76 +43,21 @@ module.exports.handleMessage = function(message) {
 };
 
 function handleGameStatisticsMessage(message) {
-  let upperBound = 10;
-  let limit = 10;
+  const limit = getLimitFromMessage(message);
 
-  const argv = message.content.split(' ');
-
-  if(argv[1] && parseInt(argv[1])) {
-    if(message.channel.type == 'dm') {
-      upperBound = 100;
-    }
-    if(parseInt(argv[1]) > 0) {
-      limit = Math.min(argv[1], upperBound);
-    }
-  }
-
-  const sourceSql = sqlFiles["top-five-games.sql"];
-  const sql = sourceSql.toString().replace('{{limit}}', limit);
-  db.raw(sql).then(rows => {
-    const table = new Table();
-    table.setHeading('Rank', 'Game', 'Time played');
-    let i = 1;
-    rows[0].forEach(row => {
-      table.addRow(
-        i++,
-        row.name,
-        capitalizeFirstLetter(moment.duration(row.time, "seconds").humanize())
-      );
-    });
-    //message.reply(table.toString(), { code: true });
-    paginateMessage(message, table.toString());
-  });
+  db_helpers.getGlobalStatistics(limit)
+    .then(table => paginateMessage(message, table));
 }
 
 function handleSelfStatisticsMessage(message) {
-  let upperBound = 10;
-  let limit = 10;
+  const limit = getLimitFromMessage(message);
 
-  const argv = message.content.split(' ');
-
-  if(argv[1] && parseInt(argv[1])) {
-    if(message.channel.type == 'dm') {
-      upperBound = 100;
-    }
-    if(parseInt(argv[1]) > 0) {
-      limit = Math.min(argv[1], upperBound);
-    }
-  }
-
-  const sourceSql = sqlFiles["selfstats.sql"];
-  const sql = sourceSql.toString().replace('{{limit}}', limit).replace('{{user_id}}', message.author.id);
-  db.raw(sql).then(rows => {
-    const table = new Table();
-    table.setHeading('Rank', 'Game', 'Time played');
-    let i = 1;
-    rows[0].forEach(row => {
-      table.addRow(
-        i++,
-        row.name,
-        capitalizeFirstLetter(moment.duration(row.time, "seconds").humanize())
-      );
-    });
-    paginateMessage(message, table.toString());
-  });
+  db_helpers.getStatisticsForUser(message.author.id, limit)
+    .then(table => paginateMessage(message, table));
 }
 
 function handlePingMessage(message) {
   message.reply('pong');
-}
-
-function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
 function paginateMessage(message, textToSend) {
@@ -129,5 +75,26 @@ function paginateMessage(message, textToSend) {
   }
   message.reply(textToSend.slice(0, Math.min(split, textToSend.length)), { code: true });
   paginateMessage(message, textToSend.slice(split));
+}
+
+function getLimitFromMessage(message) {
+  let upperBound = 10;
+  let limit = 10;
+
+  const args = message.content.split(' ');
+  if(args[1] && parseInt(args[1])) {
+    // DMs get a slightly higher upper bound
+    if(message.channel.type == 'dm') {
+      upperBound = 100;
+    }
+
+    const argument = parseInt(args[1]);
+
+    if(argument > 0) {
+      limit = Math.min(argument, upperBound);
+    }
+  }
+
+  return limit;
 }
 
