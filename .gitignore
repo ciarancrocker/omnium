@@ -1,3 +1,9 @@
 node_modules/
 .env
 sgs_bot.log
+
+# Vim shit
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-v][a-z]
+[._]sw[a-p]
