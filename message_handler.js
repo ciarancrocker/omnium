@@ -19,6 +19,9 @@ module.exports.handleMessage = function(message) {
       case 'ping':
         handlePingMessage(message);
         break;
+      case 'help':
+        handleHelpMessage(message);
+        break;
     }
   }
 };
@@ -41,6 +44,15 @@ function handleSelfStatisticsMessage(message) {
 
 function handlePingMessage(message) {
   message.reply('pong');
+}
+
+const helpMessage = `Available commands: \n\
+- ${process.env.COMMAND_PREFIX}gamestats <n? = 10> - Get the top n games being played in the society \n\
+- ${process.env.COMMAND_PREFIX}selfstats <n? = 10> - Get the top n games you have played since joining the server \n\
+- ${process.env.COMMAND_PREFIX}ping - Check the bot is behaving properly \n\
+- ${process.env.COMMAND_PREFIX}help - Get this help message`;
+function handleHelpMessage(message) {
+  message.author.send(helpMessage);
 }
 
 function paginateMessage(message, textToSend) {
