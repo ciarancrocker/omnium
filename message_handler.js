@@ -2,26 +2,7 @@ const moment = require('moment');
 const Table = require('ascii-table');
 const winston = require('winston');
 const db = require('./database');
-
-const fs = require('fs');
 const db_helpers = require('./database_helpers');
-
-const sqlFiles = {};
-
-fs.readdir('queries', (err, files) => {
-  files.forEach(file => {
-    if(file.match(/.+\.sql/)) {
-      fs.readFile('queries/' + file, (err, data) => {
-        if(err) {
-          winston.log('error', 'Error loading query file %s', file, err);
-        } else {
-          winston.log('info', 'Loaded query file %s', file);
-          sqlFiles[file] = data;
-        }
-      });
-    }
-  });
-});
 
 module.exports.handleMessage = function(message) {
   if(message.content[0] == process.env.COMMAND_PREFIX)
@@ -46,6 +27,7 @@ function handleGameStatisticsMessage(message) {
   const limit = getLimitFromMessage(message);
 
   db_helpers.getGlobalStatistics(limit)
+    .then(makeTable)
     .then(table => paginateMessage(message, table));
 }
 
@@ -53,6 +35,7 @@ function handleSelfStatisticsMessage(message) {
   const limit = getLimitFromMessage(message);
 
   db_helpers.getStatisticsForUser(message.author.id, limit)
+    .then(makeTable)
     .then(table => paginateMessage(message, table));
 }
 
@@ -98,3 +81,21 @@ function getLimitFromMessage(message) {
   return limit;
 }
 
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function makeTable(games) {
+  return new Promise(function(resolve, reject) {
+    const table = new Table();
+    table.setHeading('Rank', 'Game', 'Time Played');
+    for(let i = 0; i < games.length; i++) {
+      table.addRow(
+        (i + 1),
+        games[i].name,
+        capitalizeFirstLetter(moment.duration(games[i].time, 'seconds').humanize())
+      );
+    }
+    resolve(table.toString());
+  });
+}
