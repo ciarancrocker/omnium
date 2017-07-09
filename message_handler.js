@@ -1,113 +1,42 @@
+const fs = require('fs');
 const moment = require('moment');
 const Table = require('ascii-table');
 const winston = require('winston');
 const db = require('./database');
 const db_helpers = require('./database_helpers');
 
-module.exports.handleMessage = function(message) {
-  if(message.content[0] == process.env.COMMAND_PREFIX)
-  {
-    winston.log('info', 'Handling command %s from %s', message.content, message.author.tag);
-    switch(message.content.slice(1).split(' ')[0])
-    {
-      case 'gamestats':
-        handleGameStatisticsMessage(message);
-        break;
-      case 'selfstats':
-        handleSelfStatisticsMessage(message);
-        break;
-      case 'ping':
-        handlePingMessage(message);
-        break;
-      case 'help':
-        handleHelpMessage(message);
-        break;
+// load all the command handlers
+let command_handlers = [];
+fs.readdir('command_handlers', function(err, files) {
+  files.forEach(function(file) {
+    if(file.match(/^.+\.js$/)) {
+      const comm_handler = require(`./command_handlers/${file}`);
+      if (
+        typeof comm_handler === 'object' &&
+        comm_handler.bind && typeof comm_handler.bind === 'string' &&
+        comm_handler.callback && typeof comm_handler.callback === 'function'
+      ) {
+        winston.log('info', 'Registered command %s from file %s', comm_handler.bind, file);
+        command_handlers.push(comm_handler);
+      }
     }
-  }
-};
+  });
+});
 
-function handleGameStatisticsMessage(message) {
-  const limit = getLimitFromMessage(message);
+module.exports.dispatchMessage = function(message) {
+  // filter out messages that aren't commands for us
+  if(message.content[0] != process.env.COMMAND_PREFIX) { return; }
 
-  db_helpers.getGlobalStatistics(limit)
-    .then(makeTable)
-    .then(table => paginateMessage(message, table));
-}
-
-function handleSelfStatisticsMessage(message) {
-  const limit = getLimitFromMessage(message);
-
-  db_helpers.getStatisticsForUser(message.author.id, limit)
-    .then(makeTable)
-    .then(table => paginateMessage(message, table));
-}
-
-function handlePingMessage(message) {
-  message.reply('pong');
-}
-
-const helpMessage = `Available commands: \n\
-- ${process.env.COMMAND_PREFIX}gamestats <n? = 10> - Get the top n games being played in the society \n\
-- ${process.env.COMMAND_PREFIX}selfstats <n? = 10> - Get the top n games you have played since joining the server \n\
-- ${process.env.COMMAND_PREFIX}ping - Check the bot is behaving properly \n\
-- ${process.env.COMMAND_PREFIX}help - Get this help message`;
-function handleHelpMessage(message) {
-  message.author.send(helpMessage);
-}
-
-function paginateMessage(message, textToSend) {
-  const limit = 2000;
-  if(textToSend.length <= limit) {
-    message.reply(textToSend, { code: true });
+  // filter to target handlers
+  const target_command = message.content.slice(1).split(' ')[0];
+  const possible_handlers = command_handlers.filter(handler => handler.bind == target_command);
+  if(possible_handlers.length == 0) { // command not found
+    winston.log('info', 'Command %s from user %s not found', target_command, message.author.tag);
     return;
   }
-  let split = limit;
-  for(let i = limit; i > 0; i--) {
-    if(textToSend[i] == "\n") {
-      split = i;
-      break;
-    }
-  }
-  message.reply(textToSend.slice(0, Math.min(split, textToSend.length)), { code: true });
-  paginateMessage(message, textToSend.slice(split));
+
+  // dispatch message to designated handler
+  winston.log('info', 'Dispatched command %s for user %s', target_command, message.author.tag);
+  possible_handlers[0].callback(message);
 }
 
-function getLimitFromMessage(message) {
-  let upperBound = 10;
-  let limit = 10;
-
-  const args = message.content.split(' ');
-  if(args[1] && parseInt(args[1])) {
-    // DMs get a slightly higher upper bound
-    if(message.channel.type == 'dm') {
-      upperBound = 100;
-    }
-
-    const argument = parseInt(args[1]);
-
-    if(argument > 0) {
-      limit = Math.min(argument, upperBound);
-    }
-  }
-
-  return limit;
-}
-
-function capitalizeFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-function makeTable(games) {
-  return new Promise(function(resolve, reject) {
-    const table = new Table();
-    table.setHeading('Rank', 'Game', 'Time Played');
-    for(let i = 0; i < games.length; i++) {
-      table.addRow(
-        (i + 1),
-        games[i].name,
-        capitalizeFirstLetter(moment.duration(games[i].time, 'seconds').humanize())
-      );
-    }
-    resolve(table.toString());
-  });
-}

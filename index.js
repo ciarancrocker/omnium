@@ -38,6 +38,6 @@ client.on('ready', () => {
 
 client.on('presenceUpdate', presence_handler.handlePresenceUpdate);
 client.on('voiceStateUpdate', channel_handler.handleVoiceStateUpdate);
-client.on('message', message_handler.handleMessage);
+client.on('message', message_handler.dispatchMessage);
 
 client.login(process.env.DISCORD_KEY);
