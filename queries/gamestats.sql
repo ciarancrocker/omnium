@@ -3,8 +3,8 @@ SELECT
   SUM(EXTRACT(EPOCH FROM (B.timestamp - A.timestamp))) AS time
 FROM
   game_log A,
-  GameLog B,
-  Games
+  game_log B,
+  games
 WHERE
   A.event = 'begin'
   AND B.event = 'end'
@@ -20,9 +20,8 @@ WHERE
     AND A.user_id = C.user_id
     AND A.game_id = C.game_id
   )
-  AND A.game_id = Games.id
+  AND A.game_id = games.id
   AND games.display = TRUE
-  AND A.user_id = {{user_id}}
 GROUP BY games.name
 ORDER BY time DESC
 LIMIT {{limit}};
