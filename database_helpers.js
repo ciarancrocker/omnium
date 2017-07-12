@@ -23,7 +23,7 @@ fs.readdir('queries', (err, files) => {
 
 module.exports.getGlobalStatistics = function(limit) {
   return new Promise(function(resolve, reject) {
-    const sourceSql = sqlFiles['top-five-games.sql'];
+    const sourceSql = sqlFiles['gamestats.sql'];
     const sql = sourceSql.replace('{{limit}}', limit);
     db.raw(sql).then(rows => {
       resolve(rows[0]);
@@ -43,7 +43,7 @@ module.exports.getStatisticsForUser = function(user_id, limit) {
 
 module.exports.addEvent = function(user_id, game, event) {
   findOrCreateGame(game)
-    .then(game_id => db('GameLog').insert({ user_id, event, game_id }))
+    .then(game_id => db('game_log').insert({ user_id, event, game_id }))
     .then(() => {
       winston.log('debug', 'Logged presence change event', { user_id, game, event });
     }).catch(err => {
@@ -58,7 +58,7 @@ function findOrCreateGame(game_name) {
     if(gameCache[game_name]) {
       resolve(gameCache[game_name]);
     } else {
-      db('Games').select('id').where({ name: game_name }).then(rows => {
+      db('games').select('id').where({ name: game_name }).then(rows => {
         if(rows.length > 0) {
           winston.log('debug', 'Caching existing game', {game_name, game_id: rows[0].id});
           gameCache[game_name] = rows[0].id;

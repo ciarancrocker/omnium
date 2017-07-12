@@ -1,9 +1,8 @@
-const mysql = require('mysql');
 const knex = require('knex');
 require('dotenv').config();
 
 module.exports = knex({
-  client: 'mysql',
+  client: 'pg',
   connection: {
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
