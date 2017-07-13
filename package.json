@@ -15,5 +15,8 @@
   "devDependencies": {
     "eslint": "^4.2.0",
     "eslint-config-google": "^0.9.1"
+  },
+  "scripts": {
+    "test": "eslint *.js"
   }
 }
