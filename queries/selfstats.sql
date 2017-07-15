@@ -3,7 +3,7 @@ SELECT
   SUM(EXTRACT(EPOCH FROM (B.timestamp - A.timestamp))) AS time
 FROM
   game_log A,
-  GameLog B,
+  game_log B,
   Games
 WHERE
   A.event = 'begin'
