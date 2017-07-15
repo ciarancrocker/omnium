@@ -43,7 +43,9 @@ module.exports.getStatisticsForUser = function(userId, limit) {
 
 module.exports.addEvent = function(userId, game, event) {
   findOrCreateGame(game)
-    .then((gameId) => db('game_log').insert({userId, event, gameId}))
+    .then((gameId) => db('game_log').insert(
+      {user_id: userId, event, game_id: gameId}
+    ))
     .then(() => {
       winston.log('debug', 'Logged presence change event',
         {userId, game, event});
