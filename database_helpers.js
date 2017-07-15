@@ -23,8 +23,8 @@ module.exports.getGlobalStatistics = function(limit) {
   return new Promise(function(resolve, reject) {
     const sourceSql = sqlFiles['gamestats.sql'];
     const sql = sourceSql.replace('{{limit}}', limit);
-    db.raw(sql).then((rows) => {
-      resolve(rows[0]);
+    db.raw(sql).then((result) => {
+      resolve(result.rows);
     });
   });
 };
@@ -35,8 +35,8 @@ module.exports.getStatisticsForUser = function(userId, limit) {
     const sql = sourceSql
       .replace('{{user_id}}', userId)
       .replace('{{limit}}', limit);
-    db.raw(sql).then((rows) => {
-      resolve(rows[0]);
+    db.raw(sql).then((result) => {
+      resolve(result.rows);
     });
   });
 };
