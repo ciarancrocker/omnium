@@ -75,7 +75,7 @@ function findOrCreateGame(gameName) {
           gameCache[gameName] = rows[0].id;
           resolve(rows[0].id);
         } else {
-          db('Games').insert({name: gameName}).then((insertedRows) => {
+          db('games').insert({name: gameName}).then((insertedRows) => {
             winston.log('debug', 'Created new game record',
               {gameName, gameId: insertedRows[0]});
             gameCache[gameName] = insertedRows[0];
