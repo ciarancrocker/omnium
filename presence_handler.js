@@ -17,12 +17,12 @@ function handlePresenceUpdate(before, after) {
     if (before.presence.game && !before.presence.game.url) {
       winston.log('info', 'User %s stopped playing %s', before.user.tag,
         before.presence.game.name);
-      dbHelpers.addEvent(before.user.id, before.presence.game.name, 'end');
+      dbHelpers.addEvent(before.user, before.presence.game.name, 'end');
     }
     if (after.presence.game && !after.presence.game.url) {
       winston.log('info', 'User %s started playing %s', after.user.tag,
         after.presence.game.name);
-      dbHelpers.addEvent(after.user.id, after.presence.game.name, 'begin');
+      dbHelpers.addEvent(after.user, after.presence.game.name, 'begin');
     }
   }
 }

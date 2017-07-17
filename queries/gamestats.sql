@@ -8,7 +8,7 @@ FROM
 WHERE
   A.event = 'begin'
   AND B.event = 'end'
-  AND A.user_id = B.user_id
+  AND A.user_cache_id = B.user_cache_id
   AND A.game_id = B.game_id
   AND B.id = (
     SELECT
@@ -17,7 +17,7 @@ WHERE
     game_log C
     WHERE
     C.id > A.id
-    AND A.user_id = C.user_id
+    AND A.user_cache_id = C.user_cache_id
     AND A.game_id = C.game_id
   )
   AND A.game_id = games.id

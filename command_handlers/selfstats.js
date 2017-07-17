@@ -5,7 +5,7 @@ module.exports = {
   bind: 'selfstats',
   callback: function(message) {
     const limit = text_helpers.getLimitFromMessage(message);
-    db_helpers.getStatisticsForUser(message.author.id, limit)
+    db_helpers.getStatisticsForUser(message.author, limit)
       .then(text_helpers.makeGameTable)
       .then(table => text_helpers.paginateMessage(message, table));
   },
