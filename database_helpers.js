@@ -44,7 +44,8 @@ module.exports.getStatisticsForUser = function(user, limit) {
 };
 
 module.exports.addEvent = function(user, game, event) {
-  let gameId, userCacheId;
+  let gameId;
+  let userCacheId;
   Promise.all([
     findOrCreateGame(game).then((_gameId) => gameId = _gameId),
     findOrCreateUser(user).then((_userCacheId) => userCacheId = _userCacheId),
@@ -94,24 +95,31 @@ function findOrCreateGame(gameName) {
   });
 }
 
+/**
+ * Get the id for provided user, or create one if not found.
+ *
+ * @param {User} user - User to search for
+ * @return {number} ID of specified user
+ */
 function findOrCreateUser(user) {
   return new Promise(function(resolve, reject) {
-    if(cache.users[user.id]) { // we've already grabbed this user
+    if (cache.users[user.id]) { // we've already grabbed this user
       resolve(cache.users[user.id]);
     } else {
       db('user_cache').select('id').where({user_id: user.id}).then((rows) => {
-        if(rows.length > 0) {
+        if (rows.length > 0) {
           winston.log('debug', 'Caching existing user',
             {userId: user.id, tag: user.tag, userCacheId: rows[0].id});
           cache.users[user.id] = rows[0].id;
           resolve(rows[0].id);
         } else {
-          db('user_cache').insert({user_id: user.id, tag: user.tag}).then((insertedRows) => {
-            winston.log('debug', 'Created new user record',
-              {userId: user.id, tag: user.tag, userCacheId: insertedRows[0]});
-            cache.users[user.id] = insertedRows[0];
-            resolve(insertedRows[0]);
-          });
+          db('user_cache').insert({user_id: user.id, tag: user.tag})
+            .then((insertedRows) => {
+              winston.log('debug', 'Created new user record',
+                {userId: user.id, tag: user.tag, userCacheId: insertedRows[0]});
+              cache.users[user.id] = insertedRows[0];
+              resolve(insertedRows[0]);
+            });
         }
       });
     }
