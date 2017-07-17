@@ -76,19 +76,20 @@ function findOrCreateGame(gameName) {
     if (cache.games[gameName]) {
       resolve(cache.games[gameName]);
     } else {
-      db('games').select('id').where({name: gameName}).then((rows) => {
-        if (rows.length > 0) {
+      db('games').select('id').where({name: gameName}).then((result) => {
+        if (result.rowCount > 0) {
           winston.log('debug', 'Caching existing game',
-            {gameName, gameId: rows[0].id});
-          cache.games[gameName] = rows[0].id;
-          resolve(rows[0].id);
+            {gameName, gameId: result[0]});
+          cache.games[gameName] = result[0];
+          resolve(result[0]);
         } else {
-          db('games').insert({name: gameName}).then((insertedRows) => {
-            winston.log('debug', 'Created new game record',
-              {gameName, gameId: insertedRows[0]});
-            cache.games[gameName] = insertedRows[0];
-            resolve(insertedRows[0]);
-          });
+          db('games').returning('id').insert({name: gameName})
+            .then((result) => {
+              winston.log('debug', 'Created new game record',
+                {gameName, gameId: result[0]});
+              cache.games[gameName] = result[0];
+              resolve(result[0]);
+            });
         }
       });
     }
@@ -106,19 +107,20 @@ function findOrCreateUser(user) {
     if (cache.users[user.id]) { // we've already grabbed this user
       resolve(cache.users[user.id]);
     } else {
-      db('user_cache').select('id').where({user_id: user.id}).then((rows) => {
-        if (rows.length > 0) {
+      db('user_cache').select('id').where({user_id: user.id}).then((result) => {
+        if (result.rowCount > 0) {
           winston.log('debug', 'Caching existing user',
-            {userId: user.id, tag: user.tag, userCacheId: rows[0].id});
-          cache.users[user.id] = rows[0].id;
-          resolve(rows[0].id);
+            {userId: user.id, tag: user.tag, userCacheId: result[0]});
+          cache.users[user.id] = result[0];
+          resolve(result[0]);
         } else {
-          db('user_cache').insert({user_id: user.id, tag: user.tag})
-            .then((insertedRows) => {
+          db('user_cache').returning('id')
+            .insert({user_id: user.id, tag: user.tag})
+            .then((result) => {
               winston.log('debug', 'Created new user record',
-                {userId: user.id, tag: user.tag, userCacheId: insertedRows[0]});
-              cache.users[user.id] = insertedRows[0];
-              resolve(insertedRows[0]);
+                {userId: user.id, tag: user.tag, userCacheId: result[0]});
+              cache.users[user.id] = result[0];
+              resolve(result[0]);
             });
         }
       });
