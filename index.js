@@ -7,7 +7,6 @@ const winston = require('winston');
 require('dotenv').config();
 
 const channelHandler = require('./channel_handler');
-const presenceHandler = require('./presence_handler');
 const messageHandler = require('./message_handler');
 
 winston.configure({
@@ -38,7 +37,6 @@ client.on('ready', () => {
     process.env.COMMAND_PREFIX);
 });
 
-client.on('presenceUpdate', presenceHandler.handlePresenceUpdate);
 client.on('voiceStateUpdate', channelHandler.handleVoiceStateUpdate);
 client.on('message', messageHandler.dispatchMessage);
 
