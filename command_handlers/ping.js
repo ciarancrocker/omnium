@@ -1,6 +1,6 @@
 module.exports = {
   bind: 'ping',
-  callback: function(message) {
+  handler: function(message) {
     message.reply('pong');
   }
 }

@@ -10,7 +10,7 @@ fs.readdir('command_handlers', function(err, files) {
       if (
         typeof commHandler === 'object' &&
         commHandler.bind && typeof commHandler.bind === 'string' &&
-        commHandler.callback && typeof commHandler.callback === 'function'
+        commHandler.handler && typeof commHandler.handler === 'function'
       ) {
         winston.log('info', 'Registered command %s from file %s',
           commHandler.bind, file);
@@ -38,6 +38,6 @@ module.exports.dispatchMessage = function(message) {
   // dispatch message to designated handler
   winston.log('info', 'Dispatched command %s for user %s', targetCommand,
     message.author.tag);
-  possibleHandlers[0].callback(message);
+  possibleHandlers[0].handler(message);
 };
 
