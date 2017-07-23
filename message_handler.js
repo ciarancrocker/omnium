@@ -34,6 +34,18 @@ module.exports.dispatchMessage = function(message) {
       message.author.tag);
     return;
   }
+  const handler = possibleHandlers[0];
+
+  // validate permissions if the command is for administrators only
+  if (handler.administrative) {
+    const memberRoles = message.member.roles.array();
+    if (memberRoles.filter((role) => role.id == process.env.ADMIN_ROLE)
+      .length == 0) {
+      winston.log('info', 'Denied user %s access to command %s',
+        message.author.tag, targetCommand);
+      return;
+    }
+  }
 
   // dispatch message to designated handler
   winston.log('info', 'Dispatched command %s for user %s', targetCommand,
