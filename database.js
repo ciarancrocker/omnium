@@ -99,7 +99,7 @@ module.exports.endSession = async function(userId, gameId) {
 const gameStatisticsQuery = 'SELECT SUM(session_end - session_start) AS time,' +
   ' name FROM game_sessions INNER JOIN games ON' +
   ' game_sessions.game_id = games.id WHERE state = \'completed\'' +
-  ' GROUP BY name ORDER BY time DESC';
+  ' AND visible = true GROUP BY name ORDER BY time DESC';
 module.exports.getGameStatistics = async function() {
   const selectResult = await pool.query(gameStatisticsQuery);
   return selectResult.rows;
