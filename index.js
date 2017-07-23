@@ -8,10 +8,12 @@ require('dotenv').config();
 
 const channelHandler = require('./channel_handler');
 const messageHandler = require('./message_handler');
+const presenceHandler = require('./presence_handler');
 
 winston.configure({
   transports: [
     new (winston.transports.Console)({
+      level: 'debug',
       timestamp: true,
     }),
     new (winston.transports.File)({
@@ -39,5 +41,6 @@ client.on('ready', () => {
 
 client.on('voiceStateUpdate', channelHandler.handleVoiceStateUpdate);
 client.on('message', messageHandler.dispatchMessage);
+client.on('presenceUpdate', presenceHandler);
 
 client.login(process.env.DISCORD_KEY);
