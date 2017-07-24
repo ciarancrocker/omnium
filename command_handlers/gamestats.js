@@ -1,4 +1,6 @@
 const database = require('../database');
+const moment = require('moment');
+require('moment-duration-format');
 const textHelpers = require('../text_helpers');
 const Table = require('ascii-table');
 
@@ -13,20 +15,7 @@ const handler = async function(message) {
 };
 
 const formatInterval = function(interval) {
-  let outString = '';
-  if (interval.days) {
-    interval.hours += (interval.days * 24);
-  }
-  if (interval.hours) {
-    outString += interval.hours + ' hours, ';
-  }
-  if (interval.minutes) {
-    outString += interval.minutes + ' minutes, ';
-  }
-  if (interval.seconds) {
-    outString += interval.seconds + ' seconds';
-  }
-  return outString;
+  return moment.duration(interval).format();
 };
 
 module.exports = {
