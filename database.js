@@ -115,11 +115,11 @@ module.exports.getGameStatistics = async function() {
   return selectResult.rows;
 };
 
-const userGameStatisticsQuery = 'SELECT SUM(session_end - session_start) AS time,' +
-  ' name FROM game_sessions INNER JOIN games ON' +
-  ' game_sessions.game_id = games.id WHERE state = \'completed\'' +
-  ' AND visible = true AND user_id = $1 GROUP BY name' +
-  ' ORDER BY time DESC LIMIT 50';
+const userGameStatisticsQuery =
+  'SELECT SUM(session_end - session_start) AS time, name FROM game_sessions' +
+  ' INNER JOIN games ON game_sessions.game_id = games.id' +
+  ' WHERE state = \'completed\' AND visible = true AND user_id = $1' +
+  ' GROUP BY name ORDER BY time DESC LIMIT 50';
 module.exports.getUserGameStatistics = async function(userId) {
   const selectResult = await pool.query(userGameStatisticsQuery, [userId]);
   return selectResult.rows;
