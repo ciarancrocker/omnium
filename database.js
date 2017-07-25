@@ -16,11 +16,13 @@ const createUserQuery = 'INSERT INTO users (discord_id, display_name) VALUES' +
 module.exports.findOrCreateUser = async function(discordUser) {
     const client = await pool.connect();
     try {
+      await client.query('BEGIN TRANSACTION');
       const searchResult = await client.query(findUserQuery, [discordUser.id]);
       if (searchResult.rowCount == 1) {
         // user was found
         winston.log('debug', 'Found user ID %s for Discord ID %s',
           searchResult.rows[0].id, discordUser.id);
+        await client.query('COMMIT');
         return searchResult.rows[0].id;
       } else {
         // user was not found, create it
@@ -28,6 +30,7 @@ module.exports.findOrCreateUser = async function(discordUser) {
           [discordUser.id, discordUser.tag]);
         winston.log('debug', 'Created new user ID %s for Discord ID %s',
           createResult.rows[0].id, discordUser.id);
+        await client.query('COMMIT');
         return createResult.rows[0].id;
       }
     } finally {
@@ -40,16 +43,19 @@ const createGameQuery = 'INSERT INTO games (name) VALUES ($1) RETURNING id';
 module.exports.findOrCreateGame = async function(gameName) {
     const client = await pool.connect();
     try {
+      await client.query('BEGIN TRANSACTION');
       const searchResult = await client.query(findGameQuery, [gameName]);
       if (searchResult.rowCount == 1) {
         // game was found
         winston.log('debug', 'Found game ID %s for game %s',
           searchResult.rows[0].id, gameName);
+        await client.query('COMMIT');
         return searchResult.rows[0].id;
       } else {
         const createResult = await client.query(createGameQuery, [gameName]);
         winston.log('debug', 'Created new game ID %s for game %s',
           createResult.rows[0].id, gameName);
+        await client.query('COMMIT');
         return createResult.rows[0].id;
       }
     } finally {
@@ -62,10 +68,12 @@ const createNewSessionQuery = 'INSERT INTO game_sessions (user_id, game_id,' +
 module.exports.createNewSession = async function(userId, gameId) {
   const client = await pool.connect();
   try {
+    await client.query('BEGIN TRANSACTION');
     const values = [userId, gameId, new Date(), 'in_progress'];
     const createResult = await client.query(createNewSessionQuery, values);
     winston.log('debug', 'Created new session (%s) for user %s playing %s',
       createResult.rows[0].id, userId, gameId);
+    await client.query('COMMIT');
     return createResult.rows[0].id;
   } finally {
     client.release();
@@ -80,6 +88,7 @@ const sessionEndQuery = 'UPDATE game_sessions SET state = \'completed\', ' +
 module.exports.endSession = async function(userId, gameId) {
   const client = await pool.connect();
   try {
+    await client.query('BEGIN TRANSACTION');
     const discoverResult = await client.query(sessionDiscoverQuery,
       [userId, gameId]);
     if (discoverResult.rowCount == 0) {
@@ -88,6 +97,7 @@ module.exports.endSession = async function(userId, gameId) {
     }
     const endResult = await client.query(sessionEndQuery,
       [new Date(), discoverResult.rows[0].id]);
+    await client.query('COMMIT');
     winston.log('debug', 'Ended session (%s) for user %s playing %s',
       endResult.rows[0].id, userId, gameId);
     return;
