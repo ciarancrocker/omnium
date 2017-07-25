@@ -1,4 +1,5 @@
 const fs = require('fs');
+const Table = require('ascii-table');
 const winston = require('winston');
 
 // load all the command handlers
@@ -18,6 +19,25 @@ fs.readdir('command_handlers', function(err, files) {
       }
     }
   });
+});
+
+// special help command
+commandHandlers.push({
+  bind: 'help',
+  handler: function(message) {
+    const table = new Table();
+    table.setHeading('Command', 'Help');
+    table.setTitle('Help for ciarancrocker/sgs_bot');
+    commandHandlers.forEach(function(handler) {
+      if (handler.help) {
+        table.addRow(handler.bind, handler.help);
+      } else {
+        table.addRow(handler.bind, 'No help provided');
+      }
+    });
+    message.reply(table.toString(), {code: true});
+  },
+  help: 'This command, you donut.',
 });
 
 module.exports.dispatchMessage = function(message) {

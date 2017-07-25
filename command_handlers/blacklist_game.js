@@ -16,4 +16,5 @@ module.exports = {
   bind: 'blacklistGame',
   handler: handler,
   administrative: true,
+  help: 'Blacklist a game from being displayed in statistics',
 };

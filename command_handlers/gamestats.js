@@ -21,4 +21,5 @@ const formatInterval = function(interval) {
 module.exports = {
   bind: 'gamestats',
   handler: handler,
+  help: 'Show game statistics for the server',
 };

@@ -3,4 +3,5 @@ module.exports = {
   handler: function(message) {
     message.reply('pong');
   },
+  help: 'Ping-pong!',
 };
