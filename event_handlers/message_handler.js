@@ -5,7 +5,8 @@ const winston = require('winston');
 
 // load all the command handlers
 let commandHandlers = [];
-const commandHandlerLoadPath = path.resolve(process.cwd(), './command_handlers');
+const commandHandlerLoadPath = path.resolve(process.cwd(), 
+  './command_handlers');
 winston.log('debug', 'Loading commands from %s', commandHandlerLoadPath);
 fs.readdir(commandHandlerLoadPath, function(err, files) {
   files.forEach(function(file) {
