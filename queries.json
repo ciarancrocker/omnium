@@ -1,0 +1,11 @@
+{
+  "findUserQuery": "SELECT id FROM users WHERE discord_id = $1 LIMIT 1",
+  "createUserQuery": "INSERT INTO users (discord_id, display_name) VALUES ($1, $2) RETURNING id",
+  "findGameQuery": "SELECT id FROM games WHERE name = $1 LIMIT 1",
+  "createGameQuery": "INSERT INTO games (name) VALUES ($1) RETURNING id",
+  "createNewSessionQuery": "INSERT INTO game_sessions (user_id, game_id, session_start, state) VALUES ($1, $2, $3, $4) RETURNING id",
+  "sessionDiscoverQuery": "SELECT MAX(id) as id FROM game_sessions WHERE user_id = $1 AND game_id = $2 AND state = 'in_progress' LIMIT 1",
+  "sessionEndQuery": "UPDATE game_sessions SET state = 'completed', session_end = $1 WHERE id = $2 RETURNING id",
+  "gameStatisticsQuery": "SELECT SUM(session_end - session_start) AS time, name FROM game_sessions INNER JOIN games ON game_sessions.game_id = games.id WHERE state = 'completed' AND visible = true GROUP BY name ORDER BY time DESC LIMIT 50",
+  "userGameStatisticsQuery": "SELECT SUM(session_end - session_start) AS time, name FROM game_sessions INNER JOIN games ON game_sessions.game_id = games.id WHERE state = 'completed' AND visible = true AND user_id = $1 GROUP BY name ORDER BY time DESC LIMIT 50"
+}
