@@ -58,9 +58,17 @@ module.exports.dispatchMessage = function(message) {
 
   // validate permissions if the command is for administrators only
   if (handler.administrative) {
+    if(!message.member) {
+      // needs to be run from a server
+      winston.log('info', 'Denied user %s access to command %s',
+        message.author.tag, targetCommand);
+      message.reply('fuck off');
+      return;
+    }
     const memberRoles = message.member.roles.array();
     if (memberRoles.filter((role) => role.id == process.env.ADMIN_ROLE)
       .length == 0) {
+      message.member.send('fuck off');
       winston.log('info', 'Denied user %s access to command %s',
         message.author.tag, targetCommand);
       return;
