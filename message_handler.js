@@ -58,7 +58,7 @@ module.exports.dispatchMessage = function(message) {
 
   // validate permissions if the command is for administrators only
   if (handler.administrative) {
-    if(!message.member) {
+    if (!message.member) {
       // needs to be run from a server
       winston.log('info', 'Denied user %s access to command %s',
         message.author.tag, targetCommand);
