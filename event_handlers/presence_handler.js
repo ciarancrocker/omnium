@@ -1,4 +1,4 @@
-const database = require('./database');
+const database = require('../lib/database');
 const winston = require('winston');
 
 module.exports = async function(oldM, newM) {

@@ -1,7 +1,7 @@
-const database = require('../database');
+const database = require('../lib/database');
 const moment = require('moment');
 require('moment-duration-format');
-const textHelpers = require('../text_helpers');
+const textHelpers = require('../lib/text_helpers');
 const Table = require('ascii-table');
 
 const handler = async function(message) {

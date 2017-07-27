@@ -1,13 +1,16 @@
 const fs = require('fs');
+const path = require('path');
 const Table = require('ascii-table');
 const winston = require('winston');
 
 // load all the command handlers
 let commandHandlers = [];
-fs.readdir('command_handlers', function(err, files) {
+const commandHandlerLoadPath = path.resolve(process.cwd(), './command_handlers');
+winston.log('debug', 'Loading commands from %s', commandHandlerLoadPath);
+fs.readdir(commandHandlerLoadPath, function(err, files) {
   files.forEach(function(file) {
     if (file.match(/^.+\.js$/)) {
-      const commHandler = require(`./command_handlers/${file}`);
+      const commHandler = require(path.resolve(commandHandlerLoadPath, file));
       if (
         typeof commHandler === 'object' &&
         commHandler.bind && typeof commHandler.bind === 'string' &&

@@ -6,10 +6,6 @@ const winston = require('winston');
 
 require('dotenv').config();
 
-const channelHandler = require('./channel_handler');
-const messageHandler = require('./message_handler');
-const presenceHandler = require('./presence_handler');
-
 winston.configure({
   transports: [
     new (winston.transports.Console)({
@@ -21,6 +17,10 @@ winston.configure({
     }),
   ],
 });
+
+const channelHandler = require('./event_handlers/channel_handler');
+const messageHandler = require('./event_handlers/message_handler');
+const presenceHandler = require('./event_handlers/presence_handler');
 
 client.on('ready', () => {
   winston.log('info', 'Logged into Discord as %s', client.user.tag);
