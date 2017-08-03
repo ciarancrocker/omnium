@@ -5,8 +5,10 @@ const textHelpers = require('../lib/text_helpers');
 const Table = require('ascii-table');
 
 const handler = async function(message) {
+  const limit = textHelpers.getLimitFromMessage(message);
+
   const userId = await database.findOrCreateUser(message.author);
-  const data = await database.getUserGameStatistics(userId);
+  const data = await database.getUserGameStatistics(userId, limit);
   const table = new Table();
   table.setHeading(['Rank', 'Game', 'Time Played']);
   for (let i = 0; i < data.length; i++) {
