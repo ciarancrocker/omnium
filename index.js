@@ -24,12 +24,12 @@ const presenceHandler = require('./event_handlers/presence_handler');
 
 client.on('ready', () => {
   winston.log('info', 'Logged into Discord as %s', client.user.tag);
-  // set creepy presence
+  // set a useful presence message
   client.user.setPresence({
     status: 'online',
     afk: false,
     game: {
-      name: '100% fresh dank memes',
+      name: `Ask me for ${process.env.COMMAND_PREFIX}help`,
       url: '',
     },
   }).then(() => {
