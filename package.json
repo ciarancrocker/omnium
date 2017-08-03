@@ -2,7 +2,7 @@
   "name": "discord_channels",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT",
+  "license": "BSD-3-Clause",
   "dependencies": {
     "ascii-table": "^0.0.9",
     "discord.js": "^11.1.0",
