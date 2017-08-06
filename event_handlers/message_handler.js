@@ -3,6 +3,8 @@ const path = require('path');
 const Table = require('ascii-table');
 const winston = require('winston');
 
+const db = require('../lib/database');
+
 // load all the command handlers
 let commandHandlers = [];
 const commandHandlerLoadPath = path.resolve(process.cwd(),
@@ -44,7 +46,7 @@ commandHandlers.push({
   help: 'This command, you donut.',
 });
 
-module.exports.dispatchMessage = function(message) {
+module.exports.dispatchMessage = async function(message) {
   // filter out messages that aren't commands for us
   if (message.content[0] != process.env.COMMAND_PREFIX) return;
 
@@ -66,13 +68,12 @@ module.exports.dispatchMessage = function(message) {
       // needs to be run from a server
       winston.log('info', 'Denied user %s access to command %s',
         message.author.tag, targetCommand);
-      message.reply('fuck off');
+      message.reply('You need to run this command from within a server');
       return;
     }
-    const memberRoles = message.member.roles.array();
-    if (memberRoles.filter((role) => role.id == process.env.ADMIN_ROLE)
-      .length == 0) {
-      message.member.send('fuck off');
+    const authResult = await db.isUserAuthenticated(message.member);
+    if (!authResult) { // the user isn't permitted to run this command
+      message.member.send('Access denied; nice try kiddo.');
       winston.log('info', 'Denied user %s access to command %s',
         message.author.tag, targetCommand);
       return;

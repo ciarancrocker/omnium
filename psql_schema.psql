@@ -118,6 +118,39 @@ ALTER SEQUENCE games_id_seq OWNED BY games.id;
 
 
 --
+-- Name: permissions; Type: TABLE; Schema: public; Owner: sgsbot2
+--
+
+CREATE TABLE permissions (
+    id integer NOT NULL,
+    discord_id character varying NOT NULL
+);
+
+
+ALTER TABLE permissions OWNER TO sgsbot2;
+
+--
+-- Name: permissions_id_seq; Type: SEQUENCE; Schema: public; Owner: sgsbot2
+--
+
+CREATE SEQUENCE permissions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE permissions_id_seq OWNER TO sgsbot2;
+
+--
+-- Name: permissions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: sgsbot2
+--
+
+ALTER SEQUENCE permissions_id_seq OWNED BY permissions.id;
+
+
+--
 -- Name: temporary_channels; Type: TABLE; Schema: public; Owner: sgsbot2
 --
 
@@ -200,6 +233,13 @@ ALTER TABLE ONLY games ALTER COLUMN id SET DEFAULT nextval('games_id_seq'::regcl
 
 
 --
+-- Name: permissions id; Type: DEFAULT; Schema: public; Owner: sgsbot2
+--
+
+ALTER TABLE ONLY permissions ALTER COLUMN id SET DEFAULT nextval('permissions_id_seq'::regclass);
+
+
+--
 -- Name: temporary_channels id; Type: DEFAULT; Schema: public; Owner: sgsbot2
 --
 
@@ -235,6 +275,22 @@ ALTER TABLE ONLY games
 
 ALTER TABLE ONLY games
     ADD CONSTRAINT games_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: permissions permissions_discord_id_key; Type: CONSTRAINT; Schema: public; Owner: sgsbot2
+--
+
+ALTER TABLE ONLY permissions
+    ADD CONSTRAINT permissions_discord_id_key UNIQUE (discord_id);
+
+
+--
+-- Name: permissions permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: sgsbot2
+--
+
+ALTER TABLE ONLY permissions
+    ADD CONSTRAINT permissions_pkey PRIMARY KEY (id);
 
 
 --
