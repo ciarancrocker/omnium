@@ -25,25 +25,36 @@ fs.readdir(commandHandlerLoadPath, function(err, files) {
       }
     }
   });
-});
 
-// special help command
-commandHandlers.push({
-  bind: 'help',
-  handler: function(message) {
-    const table = new Table();
-    table.setHeading('Command', 'Help');
-    table.setTitle('Help for ciarancrocker/sgs_bot');
-    commandHandlers.forEach(function(handler) {
-      if (handler.help) {
-        table.addRow(handler.bind, handler.help);
-      } else {
-        table.addRow(handler.bind, 'No help provided');
-      }
-    });
-    message.reply(table.toString(), {code: true});
-  },
-  help: 'This command, you donut.',
+  // special help command
+  commandHandlers.push({
+    bind: 'help',
+    handler: function(message) {
+      const table = new Table();
+      table.setHeading('Command', 'Help');
+      table.setTitle('Help for ciarancrocker/sgs_bot');
+      commandHandlers.forEach(function(handler) {
+        if (handler.help) {
+          table.addRow(handler.bind, handler.help);
+        } else {
+          table.addRow(handler.bind, 'No help provided');
+        }
+      });
+      message.reply(table.toString(), {code: true});
+    },
+    help: 'This command, you donut.',
+  });
+
+  // sort the list just so help is nice and pretty
+  commandHandlers.sort(function(a, b) {
+    if (a.bind < b.bind) {
+      return -1;
+    } else if (a.bind > b.bind) {
+      return 1;
+    } else {
+      return 0;
+    }
+  });
 });
 
 module.exports.dispatchMessage = async function(message) {
