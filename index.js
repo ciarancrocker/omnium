@@ -22,18 +22,16 @@ const channelHandler = require('./event_handlers/channel_handler');
 const messageHandler = require('./event_handlers/message_handler');
 const presenceHandler = require('./event_handlers/presence_handler');
 
-client.on('ready', () => {
+client.on('ready', async function() {
   winston.log('info', 'Logged into Discord as %s', client.user.tag);
   // set a useful presence message
-  client.user.setPresence({
+  await client.user.setPresence({
     status: 'online',
     afk: false,
     game: {
       name: `Ask me for ${process.env.COMMAND_PREFIX}help`,
-      url: '',
+      type: 0,
     },
-  }).then(() => {
-    winston.log('info', 'Presence set.');
   });
   winston.log('info', 'Using %s as prefix for commands',
     process.env.COMMAND_PREFIX);
