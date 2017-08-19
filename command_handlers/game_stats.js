@@ -7,8 +7,7 @@ const Table = require('ascii-table');
 const handler = async function(message) {
   const limit = textHelpers.getLimitFromMessage(message);
 
-  const userId = await database.findOrCreateUser(message.author);
-  const data = await database.getUserGameStatistics(userId, limit);
+  const data = await database.getGameStatistics(limit);
   const table = new Table();
   table.setHeading(['Rank', 'Game', 'Time Played']);
   for (let i = 0; i < data.length; i++) {
@@ -22,7 +21,7 @@ const formatInterval = function(interval) {
 };
 
 module.exports = {
-  bind: 'selfstats',
+  bind: 'game_stats',
   handler: handler,
-  help: 'Show your game statistics',
+  help: 'Show game statistics for the server',
 };

@@ -13,7 +13,7 @@ const handler = async function(message) {
 };
 
 module.exports = {
-  bind: 'blacklistGame',
+  bind: 'blacklist_game',
   handler: handler,
   administrative: true,
   help: 'Blacklist a game from being displayed in statistics',
