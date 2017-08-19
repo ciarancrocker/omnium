@@ -32,6 +32,6 @@ module.exports = {
   bind: 'purge',
   handler: handler,
   help: 'Purge the last <n> messages from the channel this command' +
-    'is invoked in.',
+    ' is invoked in.',
   administrative: true,
 };
