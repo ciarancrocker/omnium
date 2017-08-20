@@ -29,9 +29,14 @@ const handler = async function(message) {
   }
 
   await message.member.addRole(roles[0].id);
-  await message.reply(`You were added to the role ${roleName}`);
+  const outMessage = await message
+    .reply(`You were added to the role ${roleName}`);
   winston.log('info',
     `User ${message.author.tag} was added to the role ${roleName}`);
+
+  // self destruct messages
+  message.delete(5000);
+  outMessage.delete(5000);
 };
 
 module.exports = {

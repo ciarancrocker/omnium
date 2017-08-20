@@ -30,11 +30,16 @@ const handler = async function(message) {
   }
 
   await message.member.removeRole(userRoles[0]);
-  await message.reply(`You were removed from the role ${userRoles[0].name}`);
+  const outMessage = await message
+    .reply(`You were removed from the role ${userRoles[0].name}`);
   winston.log(
     'info',
     `User ${message.author.tag} was removed from the role ${userRoles[0].name}`
   );
+
+  // self destruct messages
+  message.delete(5000);
+  outMessage.delete(5000);
 };
 
 module.exports = {
