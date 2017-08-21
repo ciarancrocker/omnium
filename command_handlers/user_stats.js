@@ -6,9 +6,8 @@ const messageHelpers = require('../lib/message_helpers');
 const Table = require('ascii-table');
 
 const handler = async function(message) {
-  const args = message.content.split(' ').slice(1);
-
-  // argument 0 is the user to search for
+  // argument 0 is the user to search for, but we use the mentions wrapper
+  // because it's nice
   const mentions = message.mentions.members.array();
   if (mentions.length == 0) {
     await messageHelpers.sendError(message, 'No user specified');
@@ -17,13 +16,7 @@ const handler = async function(message) {
   const targetUser = mentions[0].user;
 
   // argument 1 should be the limit
-  let limit = 10;
-  if (args.length > 1) {
-    limit = Number(args[1]);
-  }
-  if (message.guild) {
-    limit = Math.min(10, limit);
-  }
+  const limit = textHelpers.getLimitFromMessage(message.content);
   const userId = await database.findOrCreateUser(targetUser);
   const data = await database.getUserGameStatistics(userId, limit);
   const table = new Table();
