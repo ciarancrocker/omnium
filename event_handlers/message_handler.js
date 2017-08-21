@@ -29,17 +29,24 @@ fs.readdir(commandHandlerLoadPath, function(err, files) {
   // special help command
   commandHandlers.push({
     bind: 'help',
-    handler: function(message) {
+    handler: async function(message) {
+      let userIsAdmin = false;
+      if (message.guild) {
+        userIsAdmin = await db.isUserAuthenticated(message.member);
+      }
+
       const table = new Table();
       table.setHeading('Command', 'Help');
       table.setTitle('Help for ciarancrocker/sgs_bot');
-      commandHandlers.forEach(function(handler) {
-        if (handler.help) {
-          table.addRow(handler.bind, handler.help);
-        } else {
-          table.addRow(handler.bind, 'No help provided');
+      for (let handler of commandHandlers) {
+        if (!handler.administrative || userIsAdmin) {
+          if (handler.help) {
+            table.addRow(handler.bind, handler.help);
+          } else {
+            table.addRow(handler.bind, 'No help provided');
+          }
         }
-      });
+      };
       message.reply(table.toString(), {code: true});
     },
     help: 'This command, you donut.',
