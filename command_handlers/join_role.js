@@ -12,7 +12,8 @@ module.exports = {
     }
 
     const roleName = message.content.split(' ').slice(1).join(' ');
-    const roles = message.guild.roles.array().filter((el) => el.name == roleName);
+    const roles = message.guild.roles.array()
+      .filter((el) => el.name == roleName);
     if (roles.length == 0) {
       await messageHelpers.sendError(message,
         'The specified role does not exist.');

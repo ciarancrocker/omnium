@@ -36,7 +36,9 @@ module.exports = {
       .reply(`You were removed from the role ${userRoles[0].name}`);
     winston.log(
       'info',
-      `User ${message.author.tag} was removed from the role ${userRoles[0].name}`
+      'User %s was removed from the role %s',
+      message.author.tag,
+      userRoles[0].name
     );
 
     // self destruct messages
