@@ -1,11 +1,5 @@
+const db = require('../lib/database');
 const winston = require('winston');
-
-const mapping = {
-  '265932015713386516': 'Game Room 1',
-  '223040412636545024': 'Game Room 2',
-  '223826583444520960': 'Game Room 3',
-  '224614041740378113': 'Game Room 4',
-};
 
 /**
  * Get the modal element in an array
@@ -25,23 +19,28 @@ function mode(arr) {
  *
  * @param {Channel} channel - The channel to be updated
  */
-function updateChannel(channel) {
-  if (mapping[channel.id]) {
+async function updateChannel(channel) {
+  // see if this is a channel we're managing
+  const channelQuery = await db.pool.query(
+    'SELECT * FROM channels WHERE discord_id = $1',
+    [channel.id]
+  );
+  if (channelQuery.rowCount > 0) { // yes, we are managing it
     const channelMembers = channel.members.array();
-    let newChannelName = mapping[channel.id];
+    let channelName = channelQuery.rows[0].name;
     if (channelMembers.length > 0) {
-      const presences = channelMembers.map((gm) => gm.presence.game)
-        .filter((o) => o).map((game) => game.name);
+      const presences = channelMembers.map((m) => m.presence.game)
+        .filter((x) => x).map((p) => p.name);
       if (presences.length > 0) {
         const modalGame = mode(presences);
-        newChannelName = `${mapping[channel.id]} (${modalGame})`;
+        channelName = `${channelName} (${modalGame})`;
       }
     }
-    if (newChannelName == channel.name) {
+    if (channelName == channel.name) {
       winston.log('debug', 'Skipping update for "%s" (no change in name)',
         channel.name);
     } else {
-      setChannelName(channel, newChannelName);
+      setChannelName(channel, channelName);
     }
   }
 }
