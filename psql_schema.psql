@@ -15,25 +15,6 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: sgsbot; Type: DATABASE; Schema: -; Owner: sgsbot
---
-CREATE ROLE sgsbot LOGIN PASSWORD 'sgsbot';
-CREATE DATABASE sgsbot WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE = 'en_US.UTF-8';
-
-ALTER DATABASE sgsbot OWNER TO sgsbot;
-
-\connect sgsbot
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SET check_function_bodies = false;
-SET client_min_messages = warning;
-SET row_security = off;
-
---
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
 --
 
@@ -50,7 +31,7 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 SET search_path = public, pg_catalog;
 
 --
--- Name: session_state; Type: TYPE; Schema: public; Owner: sgsbot
+-- Name: session_state; Type: TYPE; Schema: public; Owner: sgsbot2
 --
 
 CREATE TYPE session_state AS ENUM (
@@ -59,14 +40,14 @@ CREATE TYPE session_state AS ENUM (
 );
 
 
-ALTER TYPE session_state OWNER TO sgsbot;
+ALTER TYPE session_state OWNER TO sgsbot2;
 
 SET default_tablespace = '';
 
 SET default_with_oids = false;
 
 --
--- Name: bot_roles; Type: TABLE; Schema: public; Owner: sgsbot
+-- Name: bot_roles; Type: TABLE; Schema: public; Owner: sgsbot2
 --
 
 CREATE TABLE bot_roles (
@@ -76,10 +57,10 @@ CREATE TABLE bot_roles (
 );
 
 
-ALTER TABLE bot_roles OWNER TO sgsbot;
+ALTER TABLE bot_roles OWNER TO sgsbot2;
 
 --
--- Name: bot_roles_id_seq; Type: SEQUENCE; Schema: public; Owner: sgsbot
+-- Name: bot_roles_id_seq; Type: SEQUENCE; Schema: public; Owner: sgsbot2
 --
 
 CREATE SEQUENCE bot_roles_id_seq
@@ -90,17 +71,52 @@ CREATE SEQUENCE bot_roles_id_seq
     CACHE 1;
 
 
-ALTER TABLE bot_roles_id_seq OWNER TO sgsbot;
+ALTER TABLE bot_roles_id_seq OWNER TO sgsbot2;
 
 --
--- Name: bot_roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: sgsbot
+-- Name: bot_roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: sgsbot2
 --
 
 ALTER SEQUENCE bot_roles_id_seq OWNED BY bot_roles.id;
 
 
 --
--- Name: game_sessions; Type: TABLE; Schema: public; Owner: sgsbot
+-- Name: channels; Type: TABLE; Schema: public; Owner: sgsbot2
+--
+
+CREATE TABLE channels (
+    id integer NOT NULL,
+    discord_id character varying NOT NULL,
+    name character varying NOT NULL,
+    temporary boolean DEFAULT false NOT NULL
+);
+
+
+ALTER TABLE channels OWNER TO sgsbot2;
+
+--
+-- Name: channels_id_seq; Type: SEQUENCE; Schema: public; Owner: sgsbot2
+--
+
+CREATE SEQUENCE channels_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE channels_id_seq OWNER TO sgsbot2;
+
+--
+-- Name: channels_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: sgsbot2
+--
+
+ALTER SEQUENCE channels_id_seq OWNED BY channels.id;
+
+
+--
+-- Name: game_sessions; Type: TABLE; Schema: public; Owner: sgsbot2
 --
 
 CREATE TABLE game_sessions (
@@ -113,10 +129,10 @@ CREATE TABLE game_sessions (
 );
 
 
-ALTER TABLE game_sessions OWNER TO sgsbot;
+ALTER TABLE game_sessions OWNER TO sgsbot2;
 
 --
--- Name: game_sessions_id_seq; Type: SEQUENCE; Schema: public; Owner: sgsbot
+-- Name: game_sessions_id_seq; Type: SEQUENCE; Schema: public; Owner: sgsbot2
 --
 
 CREATE SEQUENCE game_sessions_id_seq
@@ -127,17 +143,17 @@ CREATE SEQUENCE game_sessions_id_seq
     CACHE 1;
 
 
-ALTER TABLE game_sessions_id_seq OWNER TO sgsbot;
+ALTER TABLE game_sessions_id_seq OWNER TO sgsbot2;
 
 --
--- Name: game_sessions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: sgsbot
+-- Name: game_sessions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: sgsbot2
 --
 
 ALTER SEQUENCE game_sessions_id_seq OWNED BY game_sessions.id;
 
 
 --
--- Name: games; Type: TABLE; Schema: public; Owner: sgsbot
+-- Name: games; Type: TABLE; Schema: public; Owner: sgsbot2
 --
 
 CREATE TABLE games (
@@ -147,10 +163,10 @@ CREATE TABLE games (
 );
 
 
-ALTER TABLE games OWNER TO sgsbot;
+ALTER TABLE games OWNER TO sgsbot2;
 
 --
--- Name: games_id_seq; Type: SEQUENCE; Schema: public; Owner: sgsbot
+-- Name: games_id_seq; Type: SEQUENCE; Schema: public; Owner: sgsbot2
 --
 
 CREATE SEQUENCE games_id_seq
@@ -161,17 +177,17 @@ CREATE SEQUENCE games_id_seq
     CACHE 1;
 
 
-ALTER TABLE games_id_seq OWNER TO sgsbot;
+ALTER TABLE games_id_seq OWNER TO sgsbot2;
 
 --
--- Name: games_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: sgsbot
+-- Name: games_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: sgsbot2
 --
 
 ALTER SEQUENCE games_id_seq OWNED BY games.id;
 
 
 --
--- Name: permissions; Type: TABLE; Schema: public; Owner: sgsbot
+-- Name: permissions; Type: TABLE; Schema: public; Owner: sgsbot2
 --
 
 CREATE TABLE permissions (
@@ -180,10 +196,10 @@ CREATE TABLE permissions (
 );
 
 
-ALTER TABLE permissions OWNER TO sgsbot;
+ALTER TABLE permissions OWNER TO sgsbot2;
 
 --
--- Name: permissions_id_seq; Type: SEQUENCE; Schema: public; Owner: sgsbot
+-- Name: permissions_id_seq; Type: SEQUENCE; Schema: public; Owner: sgsbot2
 --
 
 CREATE SEQUENCE permissions_id_seq
@@ -194,17 +210,17 @@ CREATE SEQUENCE permissions_id_seq
     CACHE 1;
 
 
-ALTER TABLE permissions_id_seq OWNER TO sgsbot;
+ALTER TABLE permissions_id_seq OWNER TO sgsbot2;
 
 --
--- Name: permissions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: sgsbot
+-- Name: permissions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: sgsbot2
 --
 
 ALTER SEQUENCE permissions_id_seq OWNED BY permissions.id;
 
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: sgsbot
+-- Name: users; Type: TABLE; Schema: public; Owner: sgsbot2
 --
 
 CREATE TABLE users (
@@ -214,10 +230,10 @@ CREATE TABLE users (
 );
 
 
-ALTER TABLE users OWNER TO sgsbot;
+ALTER TABLE users OWNER TO sgsbot2;
 
 --
--- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: sgsbot
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: sgsbot2
 --
 
 CREATE SEQUENCE users_id_seq
@@ -228,52 +244,59 @@ CREATE SEQUENCE users_id_seq
     CACHE 1;
 
 
-ALTER TABLE users_id_seq OWNER TO sgsbot;
+ALTER TABLE users_id_seq OWNER TO sgsbot2;
 
 --
--- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: sgsbot
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: sgsbot2
 --
 
 ALTER SEQUENCE users_id_seq OWNED BY users.id;
 
 
 --
--- Name: bot_roles id; Type: DEFAULT; Schema: public; Owner: sgsbot
+-- Name: bot_roles id; Type: DEFAULT; Schema: public; Owner: sgsbot2
 --
 
 ALTER TABLE ONLY bot_roles ALTER COLUMN id SET DEFAULT nextval('bot_roles_id_seq'::regclass);
 
 
 --
--- Name: game_sessions id; Type: DEFAULT; Schema: public; Owner: sgsbot
+-- Name: channels id; Type: DEFAULT; Schema: public; Owner: sgsbot2
+--
+
+ALTER TABLE ONLY channels ALTER COLUMN id SET DEFAULT nextval('channels_id_seq'::regclass);
+
+
+--
+-- Name: game_sessions id; Type: DEFAULT; Schema: public; Owner: sgsbot2
 --
 
 ALTER TABLE ONLY game_sessions ALTER COLUMN id SET DEFAULT nextval('game_sessions_id_seq'::regclass);
 
 
 --
--- Name: games id; Type: DEFAULT; Schema: public; Owner: sgsbot
+-- Name: games id; Type: DEFAULT; Schema: public; Owner: sgsbot2
 --
 
 ALTER TABLE ONLY games ALTER COLUMN id SET DEFAULT nextval('games_id_seq'::regclass);
 
 
 --
--- Name: permissions id; Type: DEFAULT; Schema: public; Owner: sgsbot
+-- Name: permissions id; Type: DEFAULT; Schema: public; Owner: sgsbot2
 --
 
 ALTER TABLE ONLY permissions ALTER COLUMN id SET DEFAULT nextval('permissions_id_seq'::regclass);
 
 
 --
--- Name: users id; Type: DEFAULT; Schema: public; Owner: sgsbot
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: sgsbot2
 --
 
 ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
 
 
 --
--- Name: bot_roles bot_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: sgsbot
+-- Name: bot_roles bot_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: sgsbot2
 --
 
 ALTER TABLE ONLY bot_roles
@@ -281,7 +304,15 @@ ALTER TABLE ONLY bot_roles
 
 
 --
--- Name: game_sessions game_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: sgsbot
+-- Name: channels channels_pkey; Type: CONSTRAINT; Schema: public; Owner: sgsbot2
+--
+
+ALTER TABLE ONLY channels
+    ADD CONSTRAINT channels_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: game_sessions game_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: sgsbot2
 --
 
 ALTER TABLE ONLY game_sessions
@@ -289,7 +320,7 @@ ALTER TABLE ONLY game_sessions
 
 
 --
--- Name: games games_name_key; Type: CONSTRAINT; Schema: public; Owner: sgsbot
+-- Name: games games_name_key; Type: CONSTRAINT; Schema: public; Owner: sgsbot2
 --
 
 ALTER TABLE ONLY games
@@ -297,7 +328,7 @@ ALTER TABLE ONLY games
 
 
 --
--- Name: games games_pkey; Type: CONSTRAINT; Schema: public; Owner: sgsbot
+-- Name: games games_pkey; Type: CONSTRAINT; Schema: public; Owner: sgsbot2
 --
 
 ALTER TABLE ONLY games
@@ -305,7 +336,7 @@ ALTER TABLE ONLY games
 
 
 --
--- Name: permissions permissions_discord_id_key; Type: CONSTRAINT; Schema: public; Owner: sgsbot
+-- Name: permissions permissions_discord_id_key; Type: CONSTRAINT; Schema: public; Owner: sgsbot2
 --
 
 ALTER TABLE ONLY permissions
@@ -313,7 +344,7 @@ ALTER TABLE ONLY permissions
 
 
 --
--- Name: permissions permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: sgsbot
+-- Name: permissions permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: sgsbot2
 --
 
 ALTER TABLE ONLY permissions
@@ -321,7 +352,7 @@ ALTER TABLE ONLY permissions
 
 
 --
--- Name: users users_discord_id_key; Type: CONSTRAINT; Schema: public; Owner: sgsbot
+-- Name: users users_discord_id_key; Type: CONSTRAINT; Schema: public; Owner: sgsbot2
 --
 
 ALTER TABLE ONLY users
@@ -329,7 +360,7 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: sgsbot
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: sgsbot2
 --
 
 ALTER TABLE ONLY users
@@ -337,7 +368,7 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: game_sessions game_sessions_game_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: sgsbot
+-- Name: game_sessions game_sessions_game_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: sgsbot2
 --
 
 ALTER TABLE ONLY game_sessions
@@ -345,7 +376,7 @@ ALTER TABLE ONLY game_sessions
 
 
 --
--- Name: game_sessions game_sessions_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: sgsbot
+-- Name: game_sessions game_sessions_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: sgsbot2
 --
 
 ALTER TABLE ONLY game_sessions
