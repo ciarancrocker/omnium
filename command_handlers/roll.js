@@ -10,6 +10,9 @@ module.exports = {
       }
     }
 
+    // clamp value to 1000000
+    sides = Math.min(1000000, sides);
+
     const roll = Math.floor((Math.random() * sides) + 1);
     message.reply(roll);
     return;
