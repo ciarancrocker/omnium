@@ -11,19 +11,22 @@ const formatInterval = function(interval) {
 module.exports = {
   bind: 'self_stats',
   handler: async function(message) {
+    const userId = await database.findOrCreateUser(message.author);
+
     let args = textHelpers.getArgs(message.content);
     let data = [];
 
     if (isNaN(args[1]) && typeof args[1] !== 'undefined') {
-      data = await database.getGameStatisticsString(
+      data = await database.getUserGameStatisticsString(
+        userId,
         args[1].replace(/["']/g, ''),
         args[2]
       );
     } else {
       if (typeof args[1] !== 'undefined') {
-        data = await database.getGameStatistics(parseInt(args[1]));
+        data = await database.getUserGameStatistics(userId, parseInt(args[1]));
       } else {
-        data = await database.getGameStatistics(10);
+        data = await database.getUserGameStatistics(userId, 10);
       }
     }
 
