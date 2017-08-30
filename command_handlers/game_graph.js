@@ -14,7 +14,7 @@ module.exports = {
     if (isNaN(args[1]) && typeof args[1] !== 'undefined') {
       data = await database.getGameGraphString(
         args[2],
-        args[1].replace(/\"/g, '').replace(/\'/g, ''),
+        args[1].replace(/["']/g, ''),
         days
       );
       games = args[2];
