@@ -17,7 +17,7 @@ module.exports = {
     let data = [];
 
     if (isNaN(args[1]) && typeof args[1] !== 'undefined') {
-      data = await database.getUserGameStatisticsString(
+      data = await database.getUserStatisticsForGame(
         userId,
         args[1].replace(/["']/g, ''),
         args[2]
