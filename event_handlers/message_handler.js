@@ -4,6 +4,7 @@ const Table = require('ascii-table');
 const winston = require('winston');
 
 const db = require('../lib/database');
+const textHelpers = require('../lib/text_helpers');
 
 // load all the command handlers
 let commandHandlers = [];
@@ -47,7 +48,7 @@ fs.readdir(commandHandlerLoadPath, function(err, files) {
           }
         }
       };
-      message.reply(table.toString(), {code: true});
+      textHelpers.paginateMessage(message, table.toString());
     },
     help: 'This command, you donut.',
   });
