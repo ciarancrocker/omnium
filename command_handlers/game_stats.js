@@ -11,14 +11,20 @@ const formatInterval = function(interval) {
 module.exports = {
   bind: 'game_stats',
   handler: async function(message) {
-    const param1 = message.content.split(' ')[1] || '10';
-    const param2 = message.content.split(' ')[2] || 10;
+    let args = textHelpers.getArgs(message.content);
     let data = [];
 
-    if (isNaN(param1)) {
-      data = await database.getGameStatisticsString(param1, param2);
+    if (isNaN(args[1]) && typeof args[1] !== 'undefined') {
+      data = await database.getGameStatisticsString(
+        args[1].replace(/\"/g, '').replace(/\'/g, ''),
+        args[2]
+      );
     } else {
-      data = await database.getGameStatistics(parseInt(param1));
+      if (typeof args[1] !== 'undefined') {
+        data = await database.getGameStatistics(parseInt(args[1]));
+      } else {
+        data = await database.getGameStatistics(10);
+      }
     }
 
     const table = new Table();
