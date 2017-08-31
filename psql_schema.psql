@@ -88,7 +88,8 @@ CREATE TABLE channels (
     id integer NOT NULL,
     discord_id character varying NOT NULL,
     name character varying NOT NULL,
-    temporary boolean DEFAULT false NOT NULL
+    temporary boolean DEFAULT false NOT NULL,
+    temporary_index integer
 );
 
 
