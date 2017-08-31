@@ -100,6 +100,7 @@ async function provisionTemporaryChannels(guild) {
       winston.log('debug', 'Deleting temporary channel %s', emptyChannel.name);
       await guild.channels.get(emptyChannel.discord_id).delete();
       await db.deleteChannel(emptyChannel.discord_id);
+      delete managedChannels[managedChannels.indexOf(emptyChannel)];
       // re-run the empty filter and break out if we need to
       emptyManagedChannels = managedChannels.filter(
         (mch) => guild.channels.get(mch.discord_id).members.array().length == 0
