@@ -96,6 +96,7 @@ async function provisionTemporaryChannels(guild) {
     winston.log('debug', 'Scanning for empty temporary channels');
     const emptyTemporaryChannels = emptyManagedChannels
       .filter((mch) => mch.temporary);
+    emptyTemporaryChannels.reverse(); // newest first
     for (let emptyChannel of emptyTemporaryChannels) {
       winston.log('debug', 'Deleting temporary channel %s', emptyChannel.name);
       await guild.channels.get(emptyChannel.discord_id).delete();
