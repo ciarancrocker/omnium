@@ -76,7 +76,7 @@ async function provisionTemporaryChannels(guild) {
   // first lets figure out if we need a temporary channels
   const managedChannelsQuery = await db.pool.query('SELECT * FROM channels');
   const managedChannels = managedChannelsQuery.rows;
-  const emptyManagedChannels = managedChannels.filter((mch) =>
+  let emptyManagedChannels = managedChannels.filter((mch) =>
     guild.channels.get(mch.discord_id).members.array().length == 0);
 
   winston.log('debug', '%s empty managed channels',
@@ -100,6 +100,13 @@ async function provisionTemporaryChannels(guild) {
       winston.log('debug', 'Deleting temporary channel %s', emptyChannel.name);
       await guild.channels.get(emptyChannel.discord_id).delete();
       await db.deleteChannel(emptyChannel.discord_id);
+      // re-run the empty filter and break out if we need to
+      emptyManagedChannels = managedChannels.filter(
+        (mch) => guild.channels.get(mch.discord_id).members.array().length == 0
+      );
+      if (emptyManagedChannels.length <= 1) {
+        break;
+      }
     }
   }
 }
