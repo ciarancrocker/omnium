@@ -80,11 +80,17 @@ async function provisionTemporaryChannels(guild) {
     emptyManagedChannels.length);
   if (emptyManagedChannels.length == 0) {
     // we need to make a temporary channel
+    // first get the current newest channel for it's position
+    const newestChannelId = await db.getNewestChannelId();
+    const newestChannel = guild.channels.get(newestChannelId);
+
+    // then we create the channel
     const channelNumber = await db.getNextChannelNumber();
     const channelName = `Temporary Channel ${channelNumber}`;
     winston.log('debug', 'Creating new temporary channel "%s"', channelName);
     // create it in discord
     const newChannel = await guild.createChannel(channelName, 'voice');
+    await newChannel.setPosition(newestChannel.position + 1);
     // insert it in the db
     await db.createChannel(newChannel, channelNumber);
   } else if (emptyManagedChannels.length > 1) {
