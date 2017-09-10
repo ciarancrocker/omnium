@@ -65,6 +65,21 @@ fs.readdir(commandHandlerLoadPath, function(err, files) {
   });
 });
 
+/**
+ * Generate a static handler to reply with the specified text
+ *
+ * @param {string} text Text to return
+ *
+ * @return {Object} Generated static handler
+ */
+function generateStaticHandler(text) {
+  return {
+    handler: async function(message) {
+      await message.reply(text);
+    },
+  };
+}
+
 module.exports.dispatchMessage = async function(message) {
   // filter out messages that aren't commands for us
   if (message.content[0] != process.env.COMMAND_PREFIX) return;
@@ -74,12 +89,20 @@ module.exports.dispatchMessage = async function(message) {
   const possibleHandlers =
     commandHandlers.filter((handler) => handler.bind == targetCommand);
 
-  if (possibleHandlers.length == 0) { // command not found
-    winston.log('info', 'Command %s from user %s not found', targetCommand,
-      message.author.tag);
-    return;
+  let handler = undefined;
+
+  if (possibleHandlers.length == 0) { // no rich commands, look for statics
+    const staticCommand = await db.getStaticCommand(targetCommand);
+    if (staticCommand) { // there's a static
+      handler = generateStaticHandler(staticCommand.return_text);
+    } else { // command not found
+      winston.log('info', 'Command %s from user %s not found', targetCommand,
+        message.author.tag);
+      return;
+    }
+  } else { // use rich command
+    handler = possibleHandlers[0];
   }
-  const handler = possibleHandlers[0];
 
   // validate permissions if the command is for administrators only
   if (handler.administrative) {
@@ -102,6 +125,6 @@ module.exports.dispatchMessage = async function(message) {
   // dispatch message to designated handler
   winston.log('info', 'Dispatched command %s for user %s', targetCommand,
     message.author.tag);
-  possibleHandlers[0].handler(message);
+  handler.handler(message);
 };
 

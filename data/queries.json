@@ -15,5 +15,10 @@
   "gameGraphQueryString": "SELECT DATE(session_end), JUSTIFY_INTERVAL(SUM(session_end - session_start)) AS time, name FROM game_sessions INNER JOIN games ON game_sessions.game_id = games.id WHERE state = 'completed' AND visible = true AND name IN (SELECT name FROM game_sessions INNER JOIN games ON game_sessions.game_id = games.id WHERE state = 'completed' AND visible = true AND LOWER(name) ~ LOWER($2) GROUP BY name ORDER BY JUSTIFY_INTERVAL(SUM(session_end - session_start)) DESC LIMIT $1) GROUP BY DATE(session_end), name ORDER BY DATE LIMIT ($1 * $3);",
   "createChannelQuery": "INSERT INTO channels (discord_id, name, temporary, temporary_index) VALUES ($1, $2, true, $3)",
   "deleteChannelQuery": "DELETE FROM channels WHERE discord_id = $1",
-  "newestChannelIdQuery": "SELECT discord_id FROM channels WHERE temporary_index=(SELECT MAX(temporary_index) FROM channels) LIMIT 1"
+  "newestChannelIdQuery": "SELECT discord_id FROM channels WHERE temporary_index=(SELECT MAX(temporary_index) FROM channels) LIMIT 1",
+  "getStaticCommand": "SELECT * FROM static_commands WHERE command = $1 LIMIT 1",
+  "getAllStaticCommands": "SELECT * FROM static_commands",
+  "createStaticCommand": "INSERT INTO static_commands VALUES ($1, $2)",
+  "updateStaticCommand": "UPDATE static_commands SET return_text=$1 WHERE command=$2",
+  "deleteStaticCommand": "DELETE FROM static_commands WHERE command=$1"
 }
