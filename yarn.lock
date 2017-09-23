@@ -223,15 +223,15 @@ del@^2.0.2:
     pinkie-promise "^2.0.0"
     rimraf "^2.2.8"
 
-discord.js@^11.1.0:
-  version "11.2.1"
-  resolved "https://registry.yarnpkg.com/discord.js/-/discord.js-11.2.1.tgz#bfc0f5a8b6398dc372d026e503592646456053fc"
+"discord.js@git://github.com/hydrabolt/discord.js#eb591dafbaf1f91a4df90c6001cb0ff343beda07":
+  version "12.0.0-dev"
+  resolved "git://github.com/hydrabolt/discord.js#eb591dafbaf1f91a4df90c6001cb0ff343beda07"
   dependencies:
-    long "^3.2.0"
+    long "^3.0.0"
     prism-media "^0.0.1"
-    snekfetch "^3.3.0"
+    snekfetch "^3.0.0"
     tweetnacl "^1.0.0"
-    ws "^3.1.0"
+    ws "^3.0.0"
 
 doctrine@^2.0.0:
   version "2.0.0"
@@ -551,7 +551,7 @@ lodash@^4.0.0, lodash@^4.17.4, lodash@^4.3.0:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
-long@^3.2.0:
+long@^3.0.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/long/-/long-3.2.0.tgz#d821b7138ca1cb581c172990ef14db200b5c474b"
 
@@ -825,7 +825,7 @@ slice-ansi@0.0.4:
   version "0.0.4"
   resolved "https://registry.yarnpkg.com/slice-ansi/-/slice-ansi-0.0.4.tgz#edbf8903f66f7ce2f8eafd6ceed65e264c831b35"
 
-snekfetch@^3.3.0:
+snekfetch@^3.0.0:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/snekfetch/-/snekfetch-3.3.1.tgz#adde572c4d4675753dfe75b2f5c069dd1c35910a"
 
@@ -968,7 +968,7 @@ write@^0.2.1:
   dependencies:
     mkdirp "^0.5.1"
 
-ws@^3.1.0:
+ws@^3.0.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/ws/-/ws-3.2.0.tgz#d5d3d6b11aff71e73f808f40cc69d52bb6d4a185"
   dependencies:
