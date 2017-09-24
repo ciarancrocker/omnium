@@ -28,9 +28,8 @@ client.on('ready', async function() {
   await client.user.setPresence({
     status: 'online',
     afk: false,
-    game: {
+    activity: {
       name: `Ask me for ${process.env.COMMAND_PREFIX}help`,
-      type: 0,
     },
   });
   winston.log('info', 'Using %s as prefix for commands',
