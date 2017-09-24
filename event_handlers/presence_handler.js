@@ -2,24 +2,26 @@ const database = require('../lib/database');
 const winston = require('winston');
 
 module.exports = async function(oldM, newM) {
+  winston.debug(JSON.stringify(oldM.presence));
+  winston.debug(JSON.stringify(newM.presence));
   // if the game the member is playing has changed, update sessions accordingly
   if (!oldM.presence.equals(newM.presence)) {
-    if (oldM.presence.game != null && oldM.presence.game.name != null
-      && !oldM.presence.game.streaming) {
+    if (oldM.presence.activity != null && oldM.presence.activity.name != null) {
       // user finished session
       winston.log('info', 'User %s stopped playing %s', oldM.user.tag,
-        oldM.presence.game.name);
+        oldM.presence.activity.name);
       const userId = await database.findOrCreateUser(oldM.user);
-      const gameId = await database.findOrCreateGame(oldM.presence.game.name);
+      const gameId =
+        await database.findOrCreateGame(oldM.presence.activity.name);
       await database.endSession(userId, gameId);
     }
-    if (newM.presence.game != null && newM.presence.game.name != null
-      && !newM.presence.game.streaming) {
+    if (newM.presence.activity != null && newM.presence.activity.name != null) {
       // user starting session
       winston.log('info', 'User %s started playing %s', newM.user.tag,
-        newM.presence.game.name);
+        newM.presence.activity.name);
       const userId = await database.findOrCreateUser(newM.user);
-      const gameId = await database.findOrCreateGame(newM.presence.game.name);
+      const gameId =
+        await database.findOrCreateGame(newM.presence.activity.name);
       await database.createNewSession(userId, gameId);
     }
     return;
