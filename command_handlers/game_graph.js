@@ -50,10 +50,10 @@ module.exports = {
         filename: 'graph.png',
         finish: function() {
           message.reply('', {
-            file: 'graph.png',
+            files: ['./graph.png'],
           }, );
         },
-      }, );
+      });
     } else {
       message.reply('Not enough data for that game :(');
     }
