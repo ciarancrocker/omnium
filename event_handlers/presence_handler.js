@@ -2,8 +2,6 @@ const database = require('../lib/database');
 const winston = require('winston');
 
 module.exports = async function(oldM, newM) {
-  winston.debug(JSON.stringify(oldM.presence));
-  winston.debug(JSON.stringify(newM.presence));
   // if the game the member is playing has changed, update sessions accordingly
   if (!oldM.presence.equals(newM.presence)) {
     if (oldM.presence.activity != null && oldM.presence.activity.name != null) {
