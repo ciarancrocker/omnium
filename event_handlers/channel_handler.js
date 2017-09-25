@@ -138,14 +138,10 @@ async function provisionTemporaryChannels(guild) {
 function handleVoiceStateUpdate(before, after) {
   // do renaming
   if (before.voiceChannelID != null) {
-    updateChannel(
-      before.guild.channels.find((ch) => ch.id == before.voiceChannelID)
-    );
+    updateChannel(before.guild.channels.get(before.voiceChannelID));
   }
   if (after.voiceChannelID != null) {
-    updateChannel(
-      after.guild.channels.find((ch) => ch.id == after.voiceChannelID)
-    );
+    updateChannel(after.guild.channels.get(after.voiceChannelID));
   }
 
   // do temporary channels
