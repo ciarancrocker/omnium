@@ -63,6 +63,22 @@ function setChannelName(channel, newName) {
 }
 
 /**
+ * Convenience function for generating lists for temporary channel provisioning
+ *
+ * @param {Guild} guild - The guild for which channel management is taking place
+ *
+ * @return {Object} object with required arrays
+ */
+async function generateChannelLists(guild) {
+  const managedChannels = (await db.pool.query('SELECT * FROM channels')).rows;
+  const emptyManagedChannels = managedChannels.filter((mch) =>
+    guild.channels.get(mch.discord_id).members.array().length == 0);
+  const emptyTemporaryChannels = emptyManagedChannels
+    .filter((emch) => emch.temporary).reverse();
+  return {emptyManagedChannels, emptyTemporaryChannels};
+}
+
+/**
  * Handle provisioning and deprovisioning of temporary channels in a guild based
  * on channel occupancy.
  *
@@ -71,10 +87,8 @@ function setChannelName(channel, newName) {
  */
 async function provisionTemporaryChannels(guild) {
   // first lets figure out if we need a temporary channels
-  const managedChannelsQuery = await db.pool.query('SELECT * FROM channels');
-  const managedChannels = managedChannelsQuery.rows;
-  let emptyManagedChannels = managedChannels.filter((mch) =>
-    guild.channels.get(mch.discord_id).members.array().length == 0);
+  let {emptyManagedChannels, emptyTemporaryChannels} =
+    await generateChannelLists(guild);
 
   winston.log('debug', '%s empty managed channels',
     emptyManagedChannels.length);
@@ -99,21 +113,18 @@ async function provisionTemporaryChannels(guild) {
   } else if (emptyManagedChannels.length > 1) {
     // we might need to delete some temporary channels
     winston.log('debug', 'Scanning for empty temporary channels');
-    const emptyTemporaryChannels = emptyManagedChannels
-      .filter((mch) => mch.temporary);
-    emptyTemporaryChannels.reverse(); // newest first
-    for (let emptyChannel of emptyTemporaryChannels) {
-      winston.log('debug', 'Deleting temporary channel %s', emptyChannel.name);
-      await guild.channels.get(emptyChannel.discord_id).delete();
-      await db.deleteChannel(emptyChannel.discord_id);
-      delete managedChannels[managedChannels.indexOf(emptyChannel)];
-      // re-run the empty filter and break out if we need to
-      emptyManagedChannels = managedChannels.filter(
-        (mch) => guild.channels.get(mch.discord_id).members.array().length == 0
-      );
-      if (emptyManagedChannels.length <= 1) {
-        break;
-      }
+    while (emptyManagedChannels.length > 1) {
+      // get and delete the newest temporary channel
+      const channelToBeDeleted = emptyTemporaryChannels[0];
+      winston.log('debug', 'Deleting temporary channel %s',
+        channelToBeDeleted.name);
+      await guild.channels.get(channelToBeDeleted.discord_id).delete();
+      await db.deleteChannel(channelToBeDeleted.discord_id);
+      // regenerate the lists
+      const newValues = await generateChannelLists(guild);
+      managedChannels = newValues.managedChannels;
+      emptyManagedChannels = newValues.emptyManagedChannels;
+      emptyTemporaryChannels = newValues.emptyTemporaryChannels;
     }
   }
 }
