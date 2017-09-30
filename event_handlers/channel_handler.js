@@ -149,4 +149,16 @@ function handleVoiceStateUpdate(before, after) {
   provisionTemporaryChannels(after.guild);
 }
 
+function updateChannelsForGuild(guild) {
+  winston.log('info', 'Updating channels for guild %s', guild.name);
+  if (guild.available) {
+    const channels = guild.channels.array();
+    for (let channel of channels) {
+      updateChannel(channel);
+    }
+  }
+}
+
+module.exports.updateChannel = updateChannel;
+module.exports.updateChannelsForGuild = updateChannelsForGuild;
 module.exports.handleVoiceStateUpdate = handleVoiceStateUpdate;

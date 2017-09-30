@@ -1,3 +1,4 @@
+const channelHandler = require('./channel_handler');
 const database = require('../lib/database');
 const winston = require('winston');
 
@@ -21,6 +22,10 @@ module.exports = async function(oldM, newM) {
       const gameId =
         await database.findOrCreateGame(newM.presence.activity.name);
       await database.createNewSession(userId, gameId);
+    }
+    // also update the voice channel the user is in if they're in one
+    if(newM.voiceChannel) {
+      channelHandler.updateChannel(newM.voiceChannel);
     }
     return;
   }
