@@ -149,6 +149,11 @@ function handleVoiceStateUpdate(before, after) {
   provisionTemporaryChannels(after.guild);
 }
 
+/**
+ * Update all channels for the given guild
+ * 
+ * @param {Guild} guild - Guild to be updated
+ */
 function updateChannelsForGuild(guild) {
   winston.log('info', 'Updating channels for guild %s', guild.name);
   if (guild.available) {

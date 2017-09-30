@@ -24,7 +24,7 @@ module.exports = async function(oldM, newM) {
       await database.createNewSession(userId, gameId);
     }
     // also update the voice channel the user is in if they're in one
-    if(newM.voiceChannel) {
+    if (newM.voiceChannel) {
       channelHandler.updateChannel(newM.voiceChannel);
     }
     return;
