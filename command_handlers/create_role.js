@@ -13,9 +13,11 @@ module.exports = {
 
     const roleName = message.content.split(' ').slice(1).join(' ');
     const newRole = await message.guild.createRole({
-      name: roleName,
-      hoist: false,
-      mentionable: true,
+      data: {
+        name: roleName,
+        hoist: false,
+        mentionable: true,
+      },
     });
 
     await db.pool.query('INSERT INTO bot_roles (discord_id) VALUES ($1)',
