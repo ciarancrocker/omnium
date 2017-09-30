@@ -13,17 +13,21 @@ module.exports = {
     }
 
     const roleIds = await db.pool
-      .query('SELECT discord_id FROM bot_roles ORDER BY sort_index ASC');
+      .query('SELECT discord_id FROM bot_roles');
     const guildRoles = message.guild.roles.array();
-    const table = new Table();
+    let roleNames = [];
     for (let roleId of roleIds.rows) {
-      const roleNames = guildRoles
+      const roleName = guildRoles
         .filter((el) => el.id == roleId.discord_id)
         .map((el) => el.name);
-      if (roleNames.length > 0) {
-        table.addRow(roleNames[0],
-          `${process.env.COMMAND_PREFIX}join_role ${roleNames[0]}`);
+      if (roleName.length > 0) {
+        roleNames.push(roleName[0]);
       }
+    }
+    roleNames = roleNames.sort();
+    const table = new Table();
+    for (let role of roleNames) {
+      table.addRow(role, `${process.env.COMMAND_PREFIX}join_role ${role}`);
     }
 
     textHelpers.paginateMessage(message, table.toString());
