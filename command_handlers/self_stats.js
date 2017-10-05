@@ -35,7 +35,7 @@ module.exports = {
     for (let i = 0; i < data.length; i++) {
       table.addRow([(i+1), data[i].name, formatInterval(data[i].time)]);
     }
-    textHelpers.paginateMessage(message, table.toString());
+    textHelpers.paginateMessageToFunction(message.author.send.bind(message.author), table.toString());
   },
   help: 'Show your game statistics',
 };
