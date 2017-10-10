@@ -41,8 +41,8 @@ module.exports = {
     );
 
     // self destruct messages
-    message.delete(5000);
-    outMessage.delete(5000);
+    message.delete({ timeout: 5000 });
+    outMessage.delete({ timeout: 5000 });
   },
   help: 'Leave a role managed by this bot',
 };
