@@ -10,3 +10,10 @@ alter table channels add column temporary_index int;
 ```
 create table static_commands (command varchar not null, return_text varchar not null, primary key (command));
 ```
+
+## 2017-10-05T17:04:54.934Z
+```
+CREATE TABLE event_log ("timestamp" timestamp with time zone DEFAULT now() NOT NULL, event_type character varying NOT NULL, data json);
+CREATE INDEX event_log_timestamp_idx ON event_log USING btree ("timestamp");
+```
+

@@ -126,5 +126,6 @@ module.exports.dispatchMessage = async function(message) {
   winston.log('info', 'Dispatched command %s for user %s', targetCommand,
     message.author.tag);
   handler.handler(message);
+  db.logEvent('command', {name: targetCommand, args: message.content.slice(1).split(' ').slice(1)});
 };
 
