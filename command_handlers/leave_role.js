@@ -11,12 +11,11 @@ module.exports = {
       return;
     }
 
-    const roleName = message.content.split(' ').slice(1).join(' ');
-    const userRoles = message.member.roles.array()
-      .filter((el) => el.name == roleName);
-    if (userRoles.length == 0) {
+    const roleName = message.content.split(' ').slice(1).join(' ').toLowerCase();
+    const roles = message.guild.roles.array().filter((el) => el.name.toLowerCase() == roleName);
+    if (roles.length == 0) {
       await messageHelpers.sendError(message,
-        'You are not a member of the specified role.');
+        'The specified role does not exist.');
       return;
     }
 
