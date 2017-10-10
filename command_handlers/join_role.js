@@ -37,8 +37,8 @@ module.exports = {
       `User ${message.author.tag} was added to the role ${roleName}`);
 
     // self destruct messages
-    message.delete({ timeout: 5000 });
-    outMessage.delete({ timeout: 5000 });
+    message.delete({timeout: 5000});
+    outMessage.delete({timeout: 5000});
   },
   help: 'Join a role managed by this bot',
 };
