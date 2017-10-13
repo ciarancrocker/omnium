@@ -21,16 +21,12 @@ function mode(arr) {
  */
 async function updateChannel(channel) {
   // see if this is a channel we're managing
-  const channelQuery = await db.pool.query(
-    'SELECT * FROM channels WHERE discord_id = $1',
-    [channel.id]
-  );
+  const channelQuery = await db.pool.query('SELECT * FROM channels WHERE discord_id = $1', [channel.id]);
   if (channelQuery.rowCount > 0) { // yes, we are managing it
     const channelMembers = channel.members.array();
     let channelName = channelQuery.rows[0].name;
     if (channelMembers.length > 0) {
-      const presences = channelMembers.filter((m) => m.presence.activity)
-        .map((m) => m.presence.activity.name);
+      const presences = channelMembers.filter((m) => m.presence.activity).map((m) => m.presence.activity.name);
       winston.debug(channelMembers.map((m) => m.presence.activity));
       if (presences.length > 0) {
         const modalGame = mode(presences);
@@ -38,8 +34,7 @@ async function updateChannel(channel) {
       }
     }
     if (channelName == channel.name) {
-      winston.log('debug', 'Skipping update for "%s" (no change in name)',
-        channel.name);
+      winston.log('debug', 'Skipping update for "%s" (no change in name)', channel.name);
     } else {
       setChannelName(channel, channelName);
     }
@@ -58,8 +53,7 @@ function setChannelName(channel, newName) {
   return channel.setName(newName).then(() => {
     winston.log('info', 'Channel changed from "%s" to "%s"', oldName, newName);
   }).catch((err) => {
-    winston.log('error', 'Error changing channel name for channel "%s" (%d)',
-      oldName, channel.id);
+    winston.log('error', 'Error changing channel name for channel "%s" (%d)', oldName, channel.id);
   });
 }
 
@@ -74,8 +68,7 @@ async function generateChannelLists(guild) {
   const managedChannels = (await db.pool.query('SELECT * FROM channels')).rows;
   const emptyManagedChannels = managedChannels.filter((mch) =>
     guild.channels.get(mch.discord_id).members.array().length == 0);
-  const emptyTemporaryChannels = emptyManagedChannels
-    .filter((emch) => emch.temporary).reverse();
+  const emptyTemporaryChannels = emptyManagedChannels.filter((emch) => emch.temporary).reverse();
   return {emptyManagedChannels, emptyTemporaryChannels};
 }
 
@@ -88,11 +81,9 @@ async function generateChannelLists(guild) {
  */
 async function provisionTemporaryChannels(guild) {
   // first lets figure out if we need a temporary channels
-  let {emptyManagedChannels, emptyTemporaryChannels} =
-    await generateChannelLists(guild);
+  let {emptyManagedChannels, emptyTemporaryChannels} = await generateChannelLists(guild);
 
-  winston.log('debug', '%s empty managed channels',
-    emptyManagedChannels.length);
+  winston.log('debug', '%s empty managed channels', emptyManagedChannels.length);
   if (emptyManagedChannels.length == 0) {
     // we need to make a temporary channel
     // first get the current newest channel for it's position
@@ -111,14 +102,13 @@ async function provisionTemporaryChannels(guild) {
     await newChannel.setPosition(newestChannel.position + 1);
     // insert it in the db
     await db.createChannel(newChannel, channelNumber);
-  } else if (emptyManagedChannels.length > 1) {
+  } else if (emptyManagedChannels.length > 1 && emptyTemporaryChannels.length > 0) {
     // we might need to delete some temporary channels
     winston.log('debug', 'Scanning for empty temporary channels');
     while (emptyManagedChannels.length > 1) {
       // get and delete the newest temporary channel
       const channelToBeDeleted = emptyTemporaryChannels[0];
-      winston.log('debug', 'Deleting temporary channel %s',
-        channelToBeDeleted.name);
+      winston.log('debug', 'Deleting temporary channel %s', channelToBeDeleted.name);
       await guild.channels.get(channelToBeDeleted.discord_id).delete();
       await db.deleteChannel(channelToBeDeleted.discord_id);
       // regenerate the lists
@@ -151,7 +141,7 @@ function handleVoiceStateUpdate(before, after) {
 
 /**
  * Update all channels for the given guild
- * 
+ *
  * @param {Guild} guild - Guild to be updated
  */
 function updateChannelsForGuild(guild) {
