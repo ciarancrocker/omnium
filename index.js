@@ -47,10 +47,12 @@ client.on('message', messageHandler.dispatchMessage);
 client.on('presenceUpdate', presenceHandler);
 
 // If something bad happens, let the process manager restart us properly
-client.on('disconnect', function() {
+client.on('disconnect', function(ev) {
+  winston.log('debug', 'Discord.js websocket disconnected, terminating.', ev);
   process.exit(1);
 });
-client.on('error', function() {
+client.on('error', function(err) {
+  winston.log('debug', 'Discord.js client emitted error event, terminating.', err);
   process.exit(1);
 });
 
