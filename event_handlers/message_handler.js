@@ -81,6 +81,9 @@ function generateStaticHandler(text) {
 }
 
 module.exports.dispatchMessage = async function(message) {
+  // don't interact with other bots
+  if (message.member.bot) return;
+
   // filter out messages that aren't commands for us
   if (message.content[0] != process.env.COMMAND_PREFIX) return;
 
