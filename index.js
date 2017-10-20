@@ -48,7 +48,7 @@ client.on('presenceUpdate', presenceHandler);
 
 // If something bad happens, let the process manager restart us properly
 client.on('disconnect', function(ev) {
-  winston.log('debug', 'Discord.js websocket disconnected, terminating.', ev);
+  winston.log('debug', 'Discord.js websocket disconnected, terminating.', ev.reason);
   process.exit(1);
 });
 client.on('error', function(err) {
