@@ -27,8 +27,8 @@ module.exports = {
     reply += '\n\n';
     reply += statsTable.toString();
 
-    const messages = await textHelpers.paginateMessage(message, reply);
-    messages.forEach((m) => m.delete({timeout: 10000}));
+    await textHelpers.paginateMessageToFunction(message.member.send.bind(message.member), reply);
+    await message.delete();
   },
   help: 'Display configuration and debug information.',
 };
