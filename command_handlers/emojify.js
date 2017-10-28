@@ -14,9 +14,7 @@ module.exports = {
       return;
     }
 
-    const lastMessages = message.channel.messages.last(2);
-    const messageBeforeLast = lastMessages.filter((el) => el.id != message.id)[0];
-
+    const messageBeforeLast = (await message.channel.messages.fetch({limit: 1, before: message.id})).first();
     const baseEmojiId = parseInt('1F1E6', 16);
 
     for (let character of word) {
