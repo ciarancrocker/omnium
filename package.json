@@ -5,7 +5,7 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "ascii-table": "^0.0.9",
-    "discord.js": "git://github.com/hydrabolt/discord.js#68a30584db44580d1e00e6da57e24e0ae5bb1808",
+    "discord.js": "git://github.com/hydrabolt/discord.js#master",
     "dotenv": "^4.0.0",
     "moment": "^2.18.1",
     "moment-duration-format": "^1.3.0",
