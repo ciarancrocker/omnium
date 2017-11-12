@@ -8,8 +8,7 @@ const textHelpers = require('../lib/text_helpers');
 
 // load all the command handlers
 let commandHandlers = [];
-const commandHandlerLoadPath = path.resolve(process.cwd(),
-  './command_handlers');
+const commandHandlerLoadPath = path.resolve(process.cwd(), './command_handlers');
 winston.log('debug', 'Loading commands from %s', commandHandlerLoadPath);
 fs.readdir(commandHandlerLoadPath, function(err, files) {
   files.forEach(function(file) {
@@ -20,8 +19,7 @@ fs.readdir(commandHandlerLoadPath, function(err, files) {
         commHandler.bind && typeof commHandler.bind === 'string' &&
         commHandler.handler && typeof commHandler.handler === 'function'
       ) {
-        winston.log('info', 'Registered command %s from file %s',
-          commHandler.bind, file);
+        winston.log('info', 'Registered command %s from file %s', commHandler.bind, file);
         commandHandlers.push(commHandler);
       }
     }
@@ -75,7 +73,7 @@ fs.readdir(commandHandlerLoadPath, function(err, files) {
 function generateStaticHandler(text) {
   return {
     handler: async function(message) {
-      await message.reply(text);
+      await message.channel.send(text);
     },
   };
 }
@@ -89,8 +87,7 @@ module.exports.dispatchMessage = async function(message) {
 
   // filter to target handlers
   const targetCommand = message.content.slice(1).split(' ')[0];
-  const possibleHandlers =
-    commandHandlers.filter((handler) => handler.bind == targetCommand);
+  const possibleHandlers = commandHandlers.filter((handler) => handler.bind == targetCommand);
 
   let handler = undefined;
 
@@ -99,8 +96,7 @@ module.exports.dispatchMessage = async function(message) {
     if (staticCommand) { // there's a static
       handler = generateStaticHandler(staticCommand.return_text);
     } else { // command not found
-      winston.log('info', 'Command %s from user %s not found', targetCommand,
-        message.author.tag);
+      winston.log('info', 'Command %s from user %s not found', targetCommand, message.author.tag);
       return;
     }
   } else { // use rich command
@@ -111,23 +107,20 @@ module.exports.dispatchMessage = async function(message) {
   if (handler.administrative) {
     if (!message.member) {
       // needs to be run from a server
-      winston.log('info', 'Denied user %s access to command %s',
-        message.author.tag, targetCommand);
+      winston.log('info', 'Denied user %s access to command %s', message.author.tag, targetCommand);
       message.reply('You need to run this command from within a server');
       return;
     }
     const authResult = await db.isUserAuthenticated(message.member);
     if (!authResult) { // the user isn't permitted to run this command
       message.member.send('Access denied; nice try kiddo.');
-      winston.log('info', 'Denied user %s access to command %s',
-        message.author.tag, targetCommand);
+      winston.log('info', 'Denied user %s access to command %s', message.author.tag, targetCommand);
       return;
     }
   }
 
   // dispatch message to designated handler
-  winston.log('info', 'Dispatched command %s for user %s', targetCommand,
-    message.author.tag);
+  winston.log('info', 'Dispatched command %s for user %s', targetCommand, message.author.tag);
   handler.handler(message);
   db.logEvent('command', {name: targetCommand, args: message.content.slice(1).split(' ').slice(1)});
 };
