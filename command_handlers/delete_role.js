@@ -6,35 +6,27 @@ module.exports = {
   bind: 'delete_role',
   handler: async function(message) {
     if (!message.guild) {
-      await messageHelpers.sendError(message,
-        'This command must be run within a server.');
+      await messageHelpers.sendError(message, 'This command must be run within a server.');
       return;
     }
 
     const roleName = message.content.split(' ').slice(1).join(' ').toLowerCase();
-    const roles = message.guild.roles.array().map((el) => el.name.toLowerCase())
-      .filter((el) => el == roleName);
+    const roles = message.guild.roles.array().filter((el) => el.name.toLowerCase() == roleName);
     if (roles.length == 0) {
-      await messageHelpers.sendError(message,
-        'The specified role does not exist.');
+      await messageHelpers.sendError(message, 'The specified role does not exist.');
       return;
     }
 
     // verify the role is bot managed
-    const dbResult = await db.pool.query(
-      'SELECT true FROM bot_roles WHERE discord_id = $1',
-      [roles[0].id]
-    );
+    const dbResult = await db.pool.query('SELECT true FROM bot_roles WHERE discord_id = $1', [roles[0].id]);
     if (dbResult.rowCount == 0) {
-      await messageHelpers.sendError(message,
-        'The specified role cannot be joined using join_role');
+      await messageHelpers.sendError(message, 'The specified role is not bot managed');
       return;
     }
 
     // delete the role from discord and the database
     await roles[0].delete();
-    await db.pool.query('DELETE FROM bot_roles WHERE discord_id = $1',
-      [roles[0].id]);
+    await db.pool.query('DELETE FROM bot_roles WHERE discord_id = $1', [roles[0].id]);
     await message.reply(`Role ${roleName} deleted`);
     winston.log('info', `Role ${roleName} deleted`);
   },
