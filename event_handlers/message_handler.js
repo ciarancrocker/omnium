@@ -92,15 +92,20 @@ module.exports.dispatchMessage = async function(message) {
   let handler = undefined;
 
   if (possibleHandlers.length == 0) { // no rich commands, look for statics
-    const staticCommand = await db.getStaticCommand(targetCommand);
-    if (staticCommand) { // there's a static
-      handler = generateStaticHandler(staticCommand.return_text);
-    } else { // command not found
-      winston.log('info', 'Command %s from user %s not found', targetCommand, message.author.tag);
-      return;
+    if (process.env.FEAT_STATIC_COMMANDS) {
+      // look for statics
+      const staticCommand = await db.getStaticCommand(targetCommand);
+      if (staticCommand) { // there's a static
+        handler = generateStaticHandler(staticCommand.return_text);
+      }
     }
   } else { // use rich command
     handler = possibleHandlers[0];
+  }
+
+  if (!handler) { // no valid handlers found
+    winston.log('info', 'Command %s from user %s not found', targetCommand, message.author.tag);
+    return;
   }
 
   // validate permissions if the command is for administrators only

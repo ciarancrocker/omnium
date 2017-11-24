@@ -20,6 +20,9 @@ function mode(arr) {
  * @param {Channel} channel - The channel to be updated
  */
 async function updateChannel(channel) {
+  if (!process.env.FEAT_CHANNELS) {
+ return;
+}
   // see if this is a channel we're managing
   const channelQuery = await db.pool.query('SELECT * FROM channels WHERE discord_id = $1', [channel.id]);
   if (channelQuery.rowCount > 0) { // yes, we are managing it
@@ -80,6 +83,10 @@ async function generateChannelLists(guild) {
  *   place
  */
 async function provisionTemporaryChannels(guild) {
+  if (!process.env.FEAT_CHANNELS) {
+ return;
+}
+
   // first lets figure out if we need a temporary channels
   let {emptyManagedChannels, emptyTemporaryChannels} = await generateChannelLists(guild);
 
@@ -127,6 +134,9 @@ async function provisionTemporaryChannels(guild) {
  * @param {GuildMember} after - Member after the update
  */
 function handleVoiceStateUpdate(before, after) {
+  if (!process.env.FEAT_CHANNELS) {
+ return;
+}
   // do renaming
   if (before.voiceChannelID != null) {
     updateChannel(before.guild.channels.get(before.voiceChannelID));
@@ -145,6 +155,9 @@ function handleVoiceStateUpdate(before, after) {
  * @param {Guild} guild - Guild to be updated
  */
 function updateChannelsForGuild(guild) {
+  if (!process.env.FEAT_CHANNELS) {
+ return;
+}
   winston.log('info', 'Updating channels for guild %s', guild.name);
   if (guild.available) {
     const channels = guild.channels.array();
