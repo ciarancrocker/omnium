@@ -8,9 +8,9 @@ if (process.env.FEAT_STATIC_COMMANDS) {
     handler: async function(message) {
       const commands = await db.getAllStaticCommands();
       const table = new Table();
-      table.setHeading('Command', 'Text');
+      table.setHeading('Command');
       for (let command of commands) {
-        table.addRow(command.command, command.return_text);
+        table.addRow(command.command);
       }
       textHelpers.paginateMessage(message, table.toString());
     },
