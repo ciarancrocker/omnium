@@ -21,16 +21,16 @@ function mode(arr) {
  */
 async function updateChannel(channel) {
   if (!process.env.FEAT_CHANNELS) {
- return;
-}
+    return;
+  }
   // see if this is a channel we're managing
   const channelQuery = await db.pool.query('SELECT * FROM channels WHERE discord_id = $1', [channel.id]);
   if (channelQuery.rowCount > 0) { // yes, we are managing it
     const channelMembers = channel.members.array();
     let channelName = channelQuery.rows[0].name;
     if (channelMembers.length > 0) {
-      const presences = channelMembers.filter((m) => m.presence.activity).map((m) => m.presence.activity.name);
-      winston.debug(channelMembers.map((m) => m.presence.activity));
+      const presences = channelMembers.filter((m) => m.presence.game).map((m) => m.presence.game.name);
+      winston.debug(channelMembers.map((m) => m.presence.game));
       if (presences.length > 0) {
         const modalGame = mode(presences);
         channelName = `${channelName} (${modalGame})`;
@@ -84,8 +84,8 @@ async function generateChannelLists(guild) {
  */
 async function provisionTemporaryChannels(guild) {
   if (!process.env.FEAT_CHANNELS) {
- return;
-}
+    return;
+  }
 
   // first lets figure out if we need a temporary channels
   let {emptyManagedChannels, emptyTemporaryChannels} = await generateChannelLists(guild);
@@ -135,8 +135,8 @@ async function provisionTemporaryChannels(guild) {
  */
 function handleVoiceStateUpdate(before, after) {
   if (!process.env.FEAT_CHANNELS) {
- return;
-}
+    return;
+  }
   // do renaming
   if (before.voiceChannelID != null) {
     updateChannel(before.guild.channels.get(before.voiceChannelID));
@@ -156,8 +156,8 @@ function handleVoiceStateUpdate(before, after) {
  */
 function updateChannelsForGuild(guild) {
   if (!process.env.FEAT_CHANNELS) {
- return;
-}
+    return;
+  }
   winston.log('info', 'Updating channels for guild %s', guild.name);
   if (guild.available) {
     const channels = guild.channels.array();
