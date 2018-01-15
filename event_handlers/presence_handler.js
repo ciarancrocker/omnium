@@ -9,7 +9,7 @@ module.exports = async function(oldM, newM) {
 
   // if the game the member is playing has changed, update sessions accordingly
   if (!oldM.presence.equals(newM.presence)) {
-    if (oldM.presence.activity != null && oldM.presence.activity.name != null && !oldM.presence.activity.url) {
+    if (oldM.presence.activity != null && oldM.presence.activity.name != null && oldM.presence.activity.type === 'PLAYING') {
       // user finished session
       winston.log('info', 'User %s stopped playing %s', oldM.user.tag,
         oldM.presence.activity.name);
@@ -18,7 +18,7 @@ module.exports = async function(oldM, newM) {
         await database.findOrCreateGame(oldM.presence.activity.name);
       await database.endSession(userId, gameId);
     }
-    if (newM.presence.activity != null && newM.presence.activity.name != null && !newM.presence.activity.url) {
+    if (newM.presence.activity != null && newM.presence.activity.name != null && newM.presence.activity.type === 'PLAYING') {
       // user starting session
       winston.log('info', 'User %s started playing %s', newM.user.tag,
         newM.presence.activity.name);
