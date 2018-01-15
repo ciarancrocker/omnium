@@ -28,13 +28,7 @@ const presenceHandler = require('./event_handlers/presence_handler');
 client.on('ready', async function() {
   winston.log('info', 'Logged into Discord as %s', client.user.tag);
   // set a useful presence message
-  await client.user.setPresence({
-    status: 'online',
-    afk: false,
-    activity: {
-      name: `Ask me for ${process.env.COMMAND_PREFIX}help`,
-    },
-  });
+  await client.user.setActivity(`Ask me for ${process.env.COMMAND_PREFIX}help`);
   winston.log('info', 'Using %s as prefix for commands',
     process.env.COMMAND_PREFIX);
   // fire off an update for all channels in case they've gotten inconsistent
