@@ -30,8 +30,8 @@ if (process.env.FEAT_ROLES) {
       winston.log('info', `User ${message.author.tag} was added to the role ${roleName}`);
 
       // self destruct messages
-      message.delete({timeout: 5000});
-      outMessage.delete({timeout: 5000});
+      message.delete(5000);
+      outMessage.delete(5000);
 
       // log the event
       db.logEvent('join_role', {user_id: message.member.id, role: roleName});
