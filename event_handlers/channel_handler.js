@@ -99,7 +99,7 @@ async function provisionTemporaryChannels(guild) {
 
     // then we create the channel
     const channelNumber = await db.getNextChannelNumber();
-    const channelName = `Temporary Channel ${channelNumber}`;
+    const channelName = `Game Room ${channelNumber}`;
     winston.log('debug', 'Creating new temporary channel "%s"', channelName);
     // create it in discord
     const newChannel = await guild.createChannel(channelName, 'voice');
