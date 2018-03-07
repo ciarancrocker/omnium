@@ -34,7 +34,7 @@ if (process.env.FEAT_STATS) {
       const table = new Table();
       table.setHeading(['Rank', 'Game', 'Time Played']);
       for (let i = 0; i < data.length; i++) {
-        table.addRow([(i+1), data[i].name, formatInterval(data[i].time)]);
+        table.addRow([(i+1), data[i].display_name, formatInterval(data[i].time)]);
       }
       textHelpers.paginateMessageToFunction(message.author.send.bind(message.author), table.toString());
     },

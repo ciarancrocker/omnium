@@ -31,7 +31,7 @@ if (process.env.FEAT_STATS) {
       if (data.length > 1) {
         let toPlot = {};
         for (let i = 0; i < data.length; i++ ) {
-          toPlot[data[i].name] = [];
+          toPlot[data[i].display_name] = [];
         }
         for (let i = 0; i < data.length; i++) {
           let formated = '0:0';
@@ -40,7 +40,7 @@ if (process.env.FEAT_STATS) {
           } else {
             formated = '0:' + data[i].time.minutes;
           }
-          toPlot[data[i].name].push(formated);
+          toPlot[data[i].display_name].push(formated);
         }
 
         plot({
