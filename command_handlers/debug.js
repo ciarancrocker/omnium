@@ -16,12 +16,16 @@ if (process.env.FEAT_UTIL) {
 
       // general numeric statistics
       const generalStats = await db.pool.query('SELECT (SELECT COUNT(*) FROM game_sessions) AS session_count, ' +
-        '(SELECT COUNT(*) FROM games) AS game_count, MAX(game_sessions.session_start) AS latest_session ' +
+        '(SELECT COUNT(*) FROM games) AS game_count, MAX(game_sessions.session_start) AS latest_session, ' +
+        '(SELECT COUNT(*) FROM game_sessions WHERE state=\'in_progress\' AND session_start < ' +
+        '(NOW() - INTERVAL \'24 hours\')) AS dangling_sessions ' +
         'FROM game_sessions;');
       const statsTable = new Table('General statistics');
       const stats = generalStats.rows[0];
-      statsTable.setHeading('Session count', 'Unique game count', 'Latest tracked session start');
-      statsTable.addRow(stats.session_count, stats.game_count, stats.latest_session);
+      statsTable.addRow('Session count', stats.session_count);
+      statsTable.addRow('Dangling sessions', stats.dangling_sessions);
+      statsTable.addRow('Unique game count', stats.game_count);
+      statsTable.addRow('Latest tracked session start', stats.latest_session);
 
       // prepare reply
       let reply = channelsTable.toString();
