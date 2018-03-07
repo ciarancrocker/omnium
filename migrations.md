@@ -17,3 +17,9 @@ CREATE TABLE event_log ("timestamp" timestamp with time zone DEFAULT now() NOT N
 CREATE INDEX event_log_timestamp_idx ON event_log USING btree ("timestamp");
 ```
 
+## 2017-03-07
+```
+ALTER TABLE games RENAME name TO display_name;
+ALTER TABLE games ADD COLUMN IF NOT EXISTS internal_name VARCHAR;
+ALTER TABLE games ADD COLUMN IF NOT EXISTS hash BYTEA;
+```
