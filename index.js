@@ -4,6 +4,8 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 const winston = require('winston');
 
+require('./lib/winston-discord');
+
 require('dotenv').config();
 
 // Configure logging to file and console
@@ -16,6 +18,11 @@ winston.configure({
     }),
     new (winston.transports.File)({
       filename: 'sgs_bot.log',
+    }),
+    new (winston.transports.DiscordLogger)({
+      client: client,
+      channelId: process.env.DISCORD_LOG_CHANNEL,
+      level: 'error',
     }),
   ],
 });
