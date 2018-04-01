@@ -9,6 +9,10 @@ module.exports = async function(oldM, newM) {
 
   // if the game the member is playing has changed, update sessions accordingly
   if (!oldM.presence.equals(newM.presence)) {
+    if (oldM.presence.game && newM.presence.game && oldM.presence.game.equals(newM.presence.game)) {
+      // the presence has changed but the game has not
+      return;
+    }
     if (oldM.presence.game != null && oldM.presence.game.name != null && oldM.presence.game.type === 0) {
       // user finished session
       winston.log('info', 'User %s stopped playing %s', oldM.user.tag, oldM.presence.game.name);
