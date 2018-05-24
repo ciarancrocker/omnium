@@ -31,6 +31,7 @@ winston.configure({
 const channelHandler = require('./event_handlers/channel_handler');
 const messageHandler = require('./event_handlers/message_handler');
 const presenceHandler = require('./event_handlers/presence_handler');
+const memberHandlers = require('./event_handlers/member_handlers');
 
 client.on('ready', async function() {
   winston.log('info', 'Logged into Discord as %s', client.user.tag);
@@ -46,6 +47,10 @@ client.on('ready', async function() {
 client.on('voiceStateUpdate', channelHandler.handleVoiceStateUpdate);
 client.on('message', messageHandler.dispatchMessage);
 client.on('presenceUpdate', presenceHandler);
+
+// stuff to handle GDPR
+client.on('guildMemberAdd', memberHandlers.memberJoin);
+client.on('guildMemberRemove', memberHandlers.memberLeave);
 
 // If something bad happens, let the process manager restart us properly
 client.on('disconnect', function(ev) {

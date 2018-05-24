@@ -1,11 +1,15 @@
 const channelHandler = require('./channel_handler');
 const database = require('../lib/database');
+const userHelpers = require('../lib/user_helpers');
 const winston = require('winston');
 
 module.exports = async function(oldM, newM) {
   if (!process.env.FEAT_STATS) return;
   // don't interact with other bots
   if (oldM.user.bot) return;
+  // GDPR compliance; ignore the user's actions if they have not consented
+  const userConsented = await userHelpers.hasUserConsented(oldM.user);
+  if (!userConsented) return;
 
   // if the game the member is playing has changed, update sessions accordingly
   if (!oldM.presence.equals(newM.presence)) {
