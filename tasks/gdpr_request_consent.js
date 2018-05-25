@@ -9,13 +9,14 @@ module.exports = async function(client) {
   let dmUsers = [];
   for (let guild of client.guilds.array()) {
     winston.debug(`Processing users for guild ${guild.name}`);
+    await guild.fetchMembers();
     // get the users
     for (let member of guild.members.array()) {
       // if the user is not in the db, add them
       const {user} = member;
       if (user.bot) {
- continue;
-} // we don't care about bots
+        continue;
+      } // we don't care about bots
       const userDbCheck = await db.pool.query('SELECT * FROM users WHERE discord_id=$1', [user.id]);
       if (userDbCheck.rowCount == 0) {
         // need to add them to the database
