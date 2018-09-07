@@ -25,7 +25,6 @@ Make sure you have at least the following installed:
 * Node.js version 8 or higher - the bot makes use of async functions defined in the ECMA 2017 draft, which is only
 supported from version 8. Don't skimp.
 * PostgreSQL 9.6 or higher - Older versions will probably work, this is just what I run it on to develop
-* gnuplot and ghostscript
 
 The bot has only ever been tested to run on Linux; if you can get it to run on Windows, send in a pull request with
 updated docs!
