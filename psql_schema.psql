@@ -2,14 +2,15 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.4
--- Dumped by pg_dump version 9.6.4
+-- Dumped from database version 10.5 (Debian 10.5-1.pgdg90+1)
+-- Dumped by pg_dump version 10.5 (Debian 10.5-1.pgdg90+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 SET row_security = off;
@@ -28,13 +29,25 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
-SET search_path = public, pg_catalog;
+--
+-- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
+
 
 --
 -- Name: session_state; Type: TYPE; Schema: public; Owner: -
 --
 
-CREATE TYPE session_state AS ENUM (
+CREATE TYPE public.session_state AS ENUM (
     'in_progress',
     'completed'
 );
@@ -48,7 +61,7 @@ SET default_with_oids = false;
 -- Name: bot_roles; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE bot_roles (
+CREATE TABLE public.bot_roles (
     id integer NOT NULL,
     discord_id character varying NOT NULL,
     sort_index integer
@@ -59,7 +72,7 @@ CREATE TABLE bot_roles (
 -- Name: bot_roles_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE bot_roles_id_seq
+CREATE SEQUENCE public.bot_roles_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -71,14 +84,14 @@ CREATE SEQUENCE bot_roles_id_seq
 -- Name: bot_roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE bot_roles_id_seq OWNED BY bot_roles.id;
+ALTER SEQUENCE public.bot_roles_id_seq OWNED BY public.bot_roles.id;
 
 
 --
 -- Name: channels; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE channels (
+CREATE TABLE public.channels (
     id integer NOT NULL,
     discord_id character varying NOT NULL,
     name character varying NOT NULL,
@@ -91,7 +104,7 @@ CREATE TABLE channels (
 -- Name: channels_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE channels_id_seq
+CREATE SEQUENCE public.channels_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -103,14 +116,14 @@ CREATE SEQUENCE channels_id_seq
 -- Name: channels_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE channels_id_seq OWNED BY channels.id;
+ALTER SEQUENCE public.channels_id_seq OWNED BY public.channels.id;
 
 
 --
 -- Name: event_log; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE event_log (
+CREATE TABLE public.event_log (
     "timestamp" timestamp with time zone DEFAULT now() NOT NULL,
     event_type character varying NOT NULL,
     data json
@@ -121,13 +134,13 @@ CREATE TABLE event_log (
 -- Name: game_sessions; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE game_sessions (
+CREATE TABLE public.game_sessions (
     id integer NOT NULL,
     user_id integer,
     game_id integer,
     session_start timestamp without time zone,
     session_end timestamp without time zone,
-    state session_state NOT NULL
+    state public.session_state NOT NULL
 );
 
 
@@ -135,7 +148,7 @@ CREATE TABLE game_sessions (
 -- Name: game_sessions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE game_sessions_id_seq
+CREATE SEQUENCE public.game_sessions_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -147,17 +160,18 @@ CREATE SEQUENCE game_sessions_id_seq
 -- Name: game_sessions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE game_sessions_id_seq OWNED BY game_sessions.id;
+ALTER SEQUENCE public.game_sessions_id_seq OWNED BY public.game_sessions.id;
 
 
 --
 -- Name: games; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE games (
+CREATE TABLE public.games (
     id integer NOT NULL,
-    name character varying,
-    visible boolean DEFAULT true
+    display_name character varying,
+    visible boolean DEFAULT true,
+    internal_name character varying
 );
 
 
@@ -165,7 +179,7 @@ CREATE TABLE games (
 -- Name: games_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE games_id_seq
+CREATE SEQUENCE public.games_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -177,14 +191,14 @@ CREATE SEQUENCE games_id_seq
 -- Name: games_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE games_id_seq OWNED BY games.id;
+ALTER SEQUENCE public.games_id_seq OWNED BY public.games.id;
 
 
 --
 -- Name: permissions; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE permissions (
+CREATE TABLE public.permissions (
     id integer NOT NULL,
     discord_id character varying NOT NULL
 );
@@ -194,7 +208,7 @@ CREATE TABLE permissions (
 -- Name: permissions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE permissions_id_seq
+CREATE SEQUENCE public.permissions_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -206,14 +220,25 @@ CREATE SEQUENCE permissions_id_seq
 -- Name: permissions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE permissions_id_seq OWNED BY permissions.id;
+ALTER SEQUENCE public.permissions_id_seq OWNED BY public.permissions.id;
+
+
+--
+-- Name: server_statistics; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.server_statistics (
+    "timestamp" timestamp without time zone DEFAULT now() NOT NULL,
+    online_members integer DEFAULT '-1'::integer NOT NULL,
+    total_members integer DEFAULT '-1'::integer NOT NULL
+);
 
 
 --
 -- Name: static_commands; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE static_commands (
+CREATE TABLE public.static_commands (
     command character varying NOT NULL,
     return_text character varying NOT NULL
 );
@@ -223,10 +248,12 @@ CREATE TABLE static_commands (
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE users (
+CREATE TABLE public.users (
     id integer NOT NULL,
     discord_id text,
-    display_name character varying
+    display_name character varying,
+    gdpr_consented boolean DEFAULT false,
+    gdpr_consent_requested boolean DEFAULT false
 );
 
 
@@ -234,7 +261,7 @@ CREATE TABLE users (
 -- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE users_id_seq
+CREATE SEQUENCE public.users_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -246,56 +273,73 @@ CREATE SEQUENCE users_id_seq
 -- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE users_id_seq OWNED BY users.id;
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
+-- Name: votes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.votes (
+    id uuid NOT NULL,
+    message_id character varying NOT NULL,
+    topic character varying NOT NULL,
+    votes_for integer DEFAULT 0 NOT NULL,
+    votes_against integer DEFAULT 0 NOT NULL,
+    votes_abstain integer DEFAULT 0 NOT NULL,
+    start timestamp without time zone DEFAULT now() NOT NULL,
+    finish timestamp without time zone DEFAULT (now() + '01:00:00'::interval) NOT NULL,
+    role_id character varying NOT NULL
+);
 
 
 --
 -- Name: bot_roles id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY bot_roles ALTER COLUMN id SET DEFAULT nextval('bot_roles_id_seq'::regclass);
+ALTER TABLE ONLY public.bot_roles ALTER COLUMN id SET DEFAULT nextval('public.bot_roles_id_seq'::regclass);
 
 
 --
 -- Name: channels id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY channels ALTER COLUMN id SET DEFAULT nextval('channels_id_seq'::regclass);
+ALTER TABLE ONLY public.channels ALTER COLUMN id SET DEFAULT nextval('public.channels_id_seq'::regclass);
 
 
 --
 -- Name: game_sessions id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY game_sessions ALTER COLUMN id SET DEFAULT nextval('game_sessions_id_seq'::regclass);
+ALTER TABLE ONLY public.game_sessions ALTER COLUMN id SET DEFAULT nextval('public.game_sessions_id_seq'::regclass);
 
 
 --
 -- Name: games id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY games ALTER COLUMN id SET DEFAULT nextval('games_id_seq'::regclass);
+ALTER TABLE ONLY public.games ALTER COLUMN id SET DEFAULT nextval('public.games_id_seq'::regclass);
 
 
 --
 -- Name: permissions id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY permissions ALTER COLUMN id SET DEFAULT nextval('permissions_id_seq'::regclass);
+ALTER TABLE ONLY public.permissions ALTER COLUMN id SET DEFAULT nextval('public.permissions_id_seq'::regclass);
 
 
 --
 -- Name: users id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
 
 
 --
 -- Name: bot_roles bot_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY bot_roles
+ALTER TABLE ONLY public.bot_roles
     ADD CONSTRAINT bot_roles_pkey PRIMARY KEY (id);
 
 
@@ -303,7 +347,7 @@ ALTER TABLE ONLY bot_roles
 -- Name: channels channels_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY channels
+ALTER TABLE ONLY public.channels
     ADD CONSTRAINT channels_pkey PRIMARY KEY (id);
 
 
@@ -311,7 +355,7 @@ ALTER TABLE ONLY channels
 -- Name: game_sessions game_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY game_sessions
+ALTER TABLE ONLY public.game_sessions
     ADD CONSTRAINT game_sessions_pkey PRIMARY KEY (id);
 
 
@@ -319,15 +363,15 @@ ALTER TABLE ONLY game_sessions
 -- Name: games games_name_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY games
-    ADD CONSTRAINT games_name_key UNIQUE (name);
+ALTER TABLE ONLY public.games
+    ADD CONSTRAINT games_name_key UNIQUE (display_name);
 
 
 --
 -- Name: games games_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY games
+ALTER TABLE ONLY public.games
     ADD CONSTRAINT games_pkey PRIMARY KEY (id);
 
 
@@ -335,7 +379,7 @@ ALTER TABLE ONLY games
 -- Name: permissions permissions_discord_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY permissions
+ALTER TABLE ONLY public.permissions
     ADD CONSTRAINT permissions_discord_id_key UNIQUE (discord_id);
 
 
@@ -343,15 +387,23 @@ ALTER TABLE ONLY permissions
 -- Name: permissions permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY permissions
+ALTER TABLE ONLY public.permissions
     ADD CONSTRAINT permissions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: server_statistics server_statistics_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.server_statistics
+    ADD CONSTRAINT server_statistics_pkey PRIMARY KEY ("timestamp");
 
 
 --
 -- Name: static_commands static_commands_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY static_commands
+ALTER TABLE ONLY public.static_commands
     ADD CONSTRAINT static_commands_pkey PRIMARY KEY (command);
 
 
@@ -359,7 +411,7 @@ ALTER TABLE ONLY static_commands
 -- Name: users users_discord_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY users
+ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_discord_id_key UNIQUE (discord_id);
 
 
@@ -367,38 +419,39 @@ ALTER TABLE ONLY users
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY users
+ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: votes votes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.votes
+    ADD CONSTRAINT votes_pkey PRIMARY KEY (id);
 
 
 --
 -- Name: event_log_timestamp_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX event_log_timestamp_idx ON event_log USING btree ("timestamp");
+CREATE INDEX event_log_timestamp_idx ON public.event_log USING btree ("timestamp");
 
 
 --
 -- Name: game_sessions game_sessions_game_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY game_sessions
-    ADD CONSTRAINT game_sessions_game_id_fkey FOREIGN KEY (game_id) REFERENCES games(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public.game_sessions
+    ADD CONSTRAINT game_sessions_game_id_fkey FOREIGN KEY (game_id) REFERENCES public.games(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
 -- Name: game_sessions game_sessions_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY game_sessions
-    ADD CONSTRAINT game_sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: public; Type: ACL; Schema: -; Owner: -
---
-
-GRANT ALL ON SCHEMA public TO PUBLIC;
+ALTER TABLE ONLY public.game_sessions
+    ADD CONSTRAINT game_sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

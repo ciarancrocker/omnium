@@ -33,6 +33,9 @@ const messageHandler = require('./event_handlers/message_handler');
 const presenceHandler = require('./event_handlers/presence_handler');
 const memberHandlers = require('./event_handlers/member_handlers');
 
+// get our recurring functions
+const serverStatsTask = require('./lib/server_statistics');
+
 client.on('ready', async function() {
   winston.log('info', 'Logged into Discord as %s', client.user.tag);
   // set a useful presence message
@@ -42,6 +45,9 @@ client.on('ready', async function() {
   // fire off an update for all channels in case they've gotten inconsistent
   winston.log('info', 'Performing initial channel scan');
   client.guilds.array().forEach((guild) => channelHandler.updateChannelsForGuild(guild));
+
+  // set up recurring functions now
+  setInterval(() => serverStatsTask(client), 5 * 60 * 1000); // 5 minutes
 });
 
 client.on('voiceStateUpdate', channelHandler.handleVoiceStateUpdate);
