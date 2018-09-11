@@ -6,7 +6,9 @@ module.exports = {
   handler: async function(message) {
     const {rows: aggregateStats} = await db.pool.query('SELECT max(total_members) as max_members, max(online_members) as max_online_members FROM server_statistics');
 
-    const members = message.client.guilds.first().members.array();
+    const guild = message.client.guilds.first();
+    await guild.fetchMembers();
+    const members = guild.members.array();
     const onlineMembers = members.filter((x) => x.presence.status != 'offline');
 
     const embed = new RichEmbed();
