@@ -1,5 +1,5 @@
 const db = require('../lib/database');
-const winston = require('winston');
+const logger = require('../lib/logging');
 
 /**
  * Get the modal element in an array
@@ -30,14 +30,14 @@ async function updateChannel(channel) {
     let channelName = channelQuery.rows[0].name;
     if (channelMembers.length > 0) {
       const presences = channelMembers.filter((m) => m.presence.game).map((m) => m.presence.game.name);
-      winston.debug(channelMembers.map((m) => m.presence.game));
+      logger.debug(channelMembers.map((m) => m.presence.game));
       if (presences.length > 0) {
         const modalGame = mode(presences);
         channelName = `${channelName} (${modalGame})`;
       }
     }
     if (channelName == channel.name) {
-      winston.log('debug', 'Skipping update for "%s" (no change in name)', channel.name);
+      logger.log('debug', `Skipping update for "${channel.name}" (no change in name)`);
     } else {
       setChannelName(channel, channelName);
     }
@@ -54,9 +54,9 @@ async function updateChannel(channel) {
 function setChannelName(channel, newName) {
   const oldName = channel.name;
   return channel.setName(newName).then(() => {
-    winston.log('info', 'Channel changed from "%s" to "%s"', oldName, newName);
+    logger.log('info', `Channel changed from "${oldName}" to "${newName}"`);
   }).catch((err) => {
-    winston.log('error', 'Error changing channel name for channel "%s" (%d)', oldName, channel.id);
+    logger.log('error', `Error changing channel name for channel "${oldName}" (${channel.id})`);
   });
 }
 
@@ -90,7 +90,7 @@ async function provisionTemporaryChannels(guild) {
   // first lets figure out if we need a temporary channels
   let {emptyManagedChannels, emptyTemporaryChannels} = await generateChannelLists(guild);
 
-  winston.log('debug', '%s empty managed channels', emptyManagedChannels.length);
+  logger.log('debug', `${emptyManagedChannels.length} empty managed channels`);
   if (emptyManagedChannels.length == 0) {
     // we need to make a temporary channel
     // first get the current newest channel for it's position
@@ -100,7 +100,7 @@ async function provisionTemporaryChannels(guild) {
     // then we create the channel
     const channelNumber = await db.getNextChannelNumber();
     const channelName = `Game Room ${channelNumber}`;
-    winston.log('debug', 'Creating new temporary channel "%s"', channelName);
+    logger.log('debug', `Creating new temporary channel "${channelName}"`);
     // create it in discord
     const newChannel = await guild.createChannel(channelName, 'voice');
     if (newestChannel.parent) {
@@ -111,11 +111,11 @@ async function provisionTemporaryChannels(guild) {
     await db.createChannel(newChannel, channelNumber);
   } else if (emptyManagedChannels.length > 1 && emptyTemporaryChannels.length > 0) {
     // we might need to delete some temporary channels
-    winston.log('debug', 'Scanning for empty temporary channels');
+    logger.log('debug', 'Scanning for empty temporary channels');
     while (emptyManagedChannels.length > 1) {
       // get and delete the newest temporary channel
       const channelToBeDeleted = emptyTemporaryChannels[0];
-      winston.log('debug', 'Deleting temporary channel %s', channelToBeDeleted.name);
+      logger.log('debug', `Deleting temporary channel ${channelToBeDeleted.name}`);
       await guild.channels.get(channelToBeDeleted.discord_id).delete();
       await db.deleteChannel(channelToBeDeleted.discord_id);
       // regenerate the lists
@@ -158,7 +158,7 @@ function updateChannelsForGuild(guild) {
   if (!process.env.FEAT_CHANNELS) {
     return;
   }
-  winston.log('info', 'Updating channels for guild %s', guild.name);
+  logger.log('info', `Updating channels for guild ${guild.name}`, guild.name);
   if (guild.available) {
     const channels = guild.channels.array();
     for (let channel of channels) {

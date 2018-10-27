@@ -1,15 +1,15 @@
 const fs = require('fs');
 const path = require('path');
 const Table = require('ascii-table');
-const winston = require('winston');
 
 const db = require('../lib/database');
 const textHelpers = require('../lib/text_helpers');
+const logger = require('../lib/logging');
 
 // load all the command handlers
 let commandHandlers = [];
 const commandHandlerLoadPath = path.resolve(process.cwd(), './command_handlers');
-winston.log('debug', 'Loading commands from %s', commandHandlerLoadPath);
+logger.log('debug', `Loading commands from ${commandHandlerLoadPath}`);
 fs.readdir(commandHandlerLoadPath, function(err, files) {
   files.forEach(function(file) {
     if (file.match(/^.+\.js$/)) {
@@ -19,7 +19,7 @@ fs.readdir(commandHandlerLoadPath, function(err, files) {
         commHandler.bind && typeof commHandler.bind === 'string' &&
         commHandler.handler && typeof commHandler.handler === 'function'
       ) {
-        winston.log('info', 'Registered command %s from file %s', commHandler.bind, file);
+        logger.log('info', `Registered command ${commHandler.bind} from file ${file}`);
         commandHandlers.push(commHandler);
       }
     }
@@ -104,7 +104,7 @@ module.exports.dispatchMessage = async function(message) {
   }
 
   if (!handler) { // no valid handlers found
-    winston.log('info', 'Command %s from user %s not found', targetCommand, message.author.tag);
+    logger.log('info', `Command ${targetCommand} from user ${message.author.tag} not found`);
     return;
   }
 
@@ -112,20 +112,20 @@ module.exports.dispatchMessage = async function(message) {
   if (handler.administrative) {
     if (!message.member) {
       // needs to be run from a server
-      winston.log('info', 'Denied user %s access to command %s', message.author.tag, targetCommand);
+      logger.log('info', `Denied user ${message.author.tag} access to command ${targetCommand}`);
       message.reply('You need to run this command from within a server');
       return;
     }
     const authResult = await db.isUserAuthenticated(message.member);
     if (!authResult) { // the user isn't permitted to run this command
       message.member.send('Access denied; nice try kiddo.');
-      winston.log('info', 'Denied user %s access to command %s', message.author.tag, targetCommand);
+      logger.log('info', `Denied user ${message.author.tag} access to command ${targetCommand}`);
       return;
     }
   }
 
   // dispatch message to designated handler
-  winston.log('info', 'Dispatched command %s for user %s', targetCommand, message.author.tag);
+  logger.log('info', `Dispatched command ${targetCommand} for user ${message.author.tag}`);
   handler.handler(message);
   db.logEvent('command', {name: targetCommand, args: message.content.slice(1).split(' ').slice(1)});
 };

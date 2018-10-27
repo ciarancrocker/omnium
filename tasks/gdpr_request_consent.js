@@ -1,14 +1,14 @@
 const db = require('../lib/database');
+const logger = require('../lib/logging');
 const userHelpers = require('../lib/user_helpers');
-const winston = require('winston');
 
 // this task will scan all guilds and all users, synchronise the database state for users, and if any user has not had
 // their consent to store data requested under GDPR, the DM to do so is sent.
 module.exports = async function(client) {
-  winston.info('Running GDPR consent request task');
+  logger.info('Running GDPR consent request task');
   let dmUsers = [];
   for (let guild of client.guilds.array()) {
-    winston.debug(`Processing users for guild ${guild.name}`);
+    logger.debug(`Processing users for guild ${guild.name}`);
     await guild.fetchMembers();
     // get the users
     for (let member of guild.members.array()) {
@@ -34,13 +34,13 @@ module.exports = async function(client) {
     }
   }
 
-  winston.info(`Requesting user consent from ${dmUsers.length} users`);
+  logger.info(`Requesting user consent from ${dmUsers.length} users`);
   for (let user of dmUsers) {
     try {
-      winston.debug(`Sending DM to ${user.tag} for GDPR`);
+      logger.debug(`Sending DM to ${user.tag} for GDPR`);
       await userHelpers.sendGdprRequest(user);
     } catch (e) {
-      winston.error(`Failed to send GDPR consent request to ${user.tag}`);
+      logger.error(`Failed to send GDPR consent request to ${user.tag}`);
     }
   }
 };

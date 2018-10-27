@@ -1,6 +1,6 @@
 const db = require('../lib/database');
 const messageHelpers = require('../lib/message_helpers');
-const winston = require('winston');
+const logger = require('../lib/logging');
 
 if (process.env.FEAT_ROLES) {
   module.exports = {
@@ -29,7 +29,7 @@ if (process.env.FEAT_ROLES) {
       await roles[0].delete();
       await db.pool.query('DELETE FROM bot_roles WHERE discord_id = $1', [roles[0].id]);
       await message.reply(`Role ${roleName} deleted`);
-      winston.log('info', `Role ${roleName} deleted`);
+      logger.log('info', `Role ${roleName} deleted`);
     },
     help: 'Delete a bot-managed role',
     administrative: true,

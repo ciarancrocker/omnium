@@ -1,7 +1,7 @@
 const channelHandler = require('./channel_handler');
 const database = require('../lib/database');
+const logger = require('../lib/logging');
 const userHelpers = require('../lib/user_helpers');
-const winston = require('winston');
 
 module.exports = async function(oldM, newM) {
   if (!process.env.FEAT_STATS) return;
@@ -19,14 +19,14 @@ module.exports = async function(oldM, newM) {
     }
     if (oldM.presence.game != null && oldM.presence.game.name != null && oldM.presence.game.type === 0) {
       // user finished session
-      winston.log('info', 'User %s stopped playing %s', oldM.user.tag, oldM.presence.game.name);
+      logger.log('info', `User ${oldM.user.tag} stopped playing ${oldM.presence.game.name}`);
       const userId = await database.findOrCreateUser(oldM.user);
       const gameId = await database.findOrCreateGame(oldM.presence.game.name);
       await database.endSession(userId, gameId);
     }
     if (newM.presence.game != null && newM.presence.game.name != null && newM.presence.game.type === 0) {
       // user starting session
-      winston.log('info', 'User %s started playing %s', newM.user.tag, newM.presence.game.name);
+      logger.log('info', `User ${newM.user.tag} started playing ${newM.presence.game.name}`);
       const userId = await database.findOrCreateUser(newM.user);
       const gameId = await database.findOrCreateGame(newM.presence.game.name);
       await database.createNewSession(userId, gameId);

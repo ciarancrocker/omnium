@@ -1,6 +1,6 @@
 const db = require('../lib/database');
 const messageHelpers = require('../lib/message_helpers');
-const winston = require('winston');
+const logger = require('../lib/logging');
 
 if (process.env.FEAT_ROLES) {
   module.exports = {
@@ -27,7 +27,7 @@ if (process.env.FEAT_ROLES) {
 
       await message.member.addRole(roles[0].id);
       const outMessage = await message.reply(`You were added to the role ${roleName}`);
-      winston.log('info', `User ${message.author.tag} was added to the role ${roleName}`);
+      logger.log('info', `User ${message.author.tag} was added to the role ${roleName}`);
 
       // self destruct messages
       message.delete(5000);

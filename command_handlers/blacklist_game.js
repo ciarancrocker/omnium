@@ -1,5 +1,5 @@
 const database = require('../lib/database');
-const winston = require('winston');
+const logger = require('../lib/logging');
 
 if (process.env.FEAT_STATS) {
   module.exports = {
@@ -8,11 +8,9 @@ if (process.env.FEAT_STATS) {
       const args = message.content.split(' ');
       const gameToBlacklist = args.slice(1).join(' ');
       const gameId = await database.findOrCreateGame(gameToBlacklist);
-      await database.pool.query('UPDATE games SET visible = false WHERE id = $1',
-        [gameId]);
+      await database.pool.query('UPDATE games SET visible = false WHERE id = $1', [gameId]);
       message.reply(`Blacklisted game ${gameToBlacklist} (${gameId})`);
-      winston.log('info', 'Blacklisted game %s with id %s', gameToBlacklist,
-        gameId);
+      logger.log('info', `Blacklisted game ${gameToBlacklist} with id ${gameId}`);
     },
     administrative: true,
     help: 'Blacklist a game from being displayed in statistics',

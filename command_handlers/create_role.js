@@ -1,14 +1,13 @@
 const db = require('../lib/database');
 const messageHelpers = require('../lib/message_helpers');
-const winston = require('winston');
+const logger = require('../lib/logging');
 
 if (process.env.FEAT_ROLES) {
   module.exports = {
     bind: 'create_role',
     handler: async function(message) {
       if (!message.guild) {
-        await messageHelpers.sendError(message,
-          'This command must be run within a server.');
+        await messageHelpers.sendError(message, 'This command must be run within a server.');
         return;
       }
 
@@ -19,12 +18,11 @@ if (process.env.FEAT_ROLES) {
         mentionable: true,
       });
 
-      await db.pool.query('INSERT INTO bot_roles (discord_id) VALUES ($1)',
-        [newRole.id]);
+      await db.pool.query('INSERT INTO bot_roles (discord_id) VALUES ($1)', [newRole.id]);
 
       const logMessage = `Role '${roleName}' created with ID ${newRole.id}`;
       message.reply(logMessage);
-      winston.log('info', logMessage);
+      logger.log('info', logMessage);
     },
     help: 'Create a new bot-managed role',
     administrative: true,

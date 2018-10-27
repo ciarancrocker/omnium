@@ -1,6 +1,6 @@
 const db = require('../lib/database');
 const messageHelpers = require('../lib/message_helpers');
-const winston = require('winston');
+const logger = require('../lib/logging');
 
 if (process.env.FEAT_ROLES) {
   module.exports = {
@@ -27,7 +27,7 @@ if (process.env.FEAT_ROLES) {
 
       await message.member.removeRole(userRoles[0]);
       const outMessage = await message.reply(`You were removed from the role ${userRoles[0].name}`);
-      winston.log('info', 'User %s was removed from the role %s', message.author.tag, userRoles[0].name);
+      logger.log('info', `User ${message.author.tag} was removed from the role ${userRoles[0].name}`);
 
       // self destruct messages
       message.delete(5000);
