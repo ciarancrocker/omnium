@@ -1,7 +1,7 @@
 node_modules/
 .env
 sgs_bot.log
-graph.png
+omnium.log
 package-lock.json
 
 # Vim shit
