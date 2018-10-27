@@ -18,11 +18,12 @@
   },
   "devDependencies": {
     "eslint": "^4.5.0",
-    "eslint-config-google": "^0.9.1"
+    "eslint-config-google": "^0.9.1",
+    "nodemon": "^1.18.5"
   },
   "scripts": {
     "test": "eslint .",
-    "dev": "eslint . ; node index.js",
-    "release": "node index.js"
+    "dev": "nodemon index.js",
+    "start": "node index.js"
   }
 }
