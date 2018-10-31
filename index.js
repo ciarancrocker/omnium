@@ -16,10 +16,10 @@ const memberHandlers = require('./event_handlers/member_handlers');
 const serverStatsTask = require('./lib/server_statistics');
 
 client.on('ready', async function() {
-  logger.log('info', 'Logged into Discord as %s', client.user.tag);
+  logger.log('info', `Logged into Discord as ${client.user.tag}`);
   // set a useful presence message
   await client.user.setActivity(`Ask me for ${process.env.COMMAND_PREFIX}help`);
-  logger.log('info', 'Using %s as prefix for commands', process.env.COMMAND_PREFIX);
+  logger.log('info', `Using ${process.env.COMMAND_PREFIX} as prefix for commands`);
   // fire off an update for all channels in case they've gotten inconsistent
   logger.log('info', 'Performing initial channel scan');
   client.guilds.array().forEach((guild) => channelHandler.updateChannelsForGuild(guild));
