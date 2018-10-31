@@ -26,12 +26,16 @@ if (process.env.FEAT_STATS) {
       const limit = textHelpers.getLimitFromMessage(message.content, 10);
       const userId = await database.findOrCreateUser(targetUser);
       const data = await database.getUserGameStatistics(userId, limit);
-      const table = new Table();
-      table.setHeading(['Rank', 'Game', 'Time Played']);
-      for (let i = 0; i < data.length; i++) {
-        table.addRow([(i+1), data[i].display_name, formatInterval(data[i].time)]);
+      if (data.length > 0) {
+        const table = new Table();
+        table.setHeading(['Rank', 'Game', 'Time Played']);
+        for (let i = 0; i < data.length; i++) {
+          table.addRow([(i + 1), data[i].display_name, formatInterval(data[i].time)]);
+        }
+        textHelpers.paginateMessage(message, table.toString());
+      } else {
+        await message.reply('Not enough information gathered. Check back later.');
       }
-      textHelpers.paginateMessage(message, table.toString());
     },
     help: 'Show game statistics for the specified user',
     administrative: true,

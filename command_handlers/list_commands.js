@@ -7,12 +7,16 @@ if (process.env.FEAT_STATIC_COMMANDS) {
     bind: 'list_commands',
     handler: async function(message) {
       const commands = await db.getAllStaticCommands();
-      const table = new Table();
-      table.setHeading('Command');
-      for (let command of commands) {
-        table.addRow(command.command);
+      if (commands.length > 0) {
+        const table = new Table();
+        table.setHeading('Command');
+        for (let command of commands) {
+          table.addRow(command.command);
+        }
+        textHelpers.paginateMessage(message, table.toString());
+      } else {
+        await message.reply('No commands configured.');
       }
-      textHelpers.paginateMessage(message, table.toString());
     },
     administrative: true,
     help: 'List all commands',

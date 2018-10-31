@@ -26,12 +26,16 @@ if (process.env.FEAT_ROLES) {
         }
       }
       roleNames = roleNames.sort();
-      const table = new Table();
-      for (let role of roleNames) {
-        table.addRow(role, `${process.env.COMMAND_PREFIX}join_role ${role}`);
-      }
+      if (roleNames.length > 0) {
+        const table = new Table();
+        for (let role of roleNames) {
+          table.addRow(role, `${process.env.COMMAND_PREFIX}join_role ${role}`);
+        }
 
-      textHelpers.paginateMessage(message, table.toString());
+        textHelpers.paginateMessage(message, table.toString());
+      } else {
+        await message.reply('No roles configured.');
+      }
       return;
     },
     help: 'List the roles that can be joined using join_role',
