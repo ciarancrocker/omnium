@@ -6,7 +6,7 @@
   "dependencies": {
     "ascii-table": "^0.0.9",
     "bufferutil": "^3.0.3",
-    "discord.js": "^11.3.2",
+    "discord.js": "^11.4.2",
     "dotenv": "^4.0.0",
     "erlpack": "discordapp/erlpack",
     "moment": "^2.18.1",
