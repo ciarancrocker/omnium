@@ -36,7 +36,7 @@ fs.readdir(commandHandlerLoadPath, function(err, files) {
 
       const table = new Table();
       table.setHeading('Command', 'Help');
-      table.setTitle('Help for ciarancrocker/sgs_bot');
+      table.setTitle('Omnium help');
       for (let handler of commandHandlers) {
         if (!handler.administrative || userIsAdmin) {
           if (handler.help) {

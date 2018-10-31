@@ -1,8 +1,8 @@
-# SGS Bot
+# Omnium
 
-[![Build Status](https://travis-ci.org/ciarancrocker/sgs_bot.svg?branch=master)](https://travis-ci.org/ciarancrocker/sgs_bot)
+[![Build Status](https://travis-ci.org/ciarancrocker/omnium.svg?branch=develop)](https://travis-ci.org/ciarancrocker/omnium)
 
-A Discord bot made for the [Swansea Gaming Society](https://sugaming.co.uk). Includes amazing features like:
+A Discord bot made for the [Swansea Gaming Society](https://sugaming.co.uk). Includes features like:
 
 * Automatic channel renaming - Help identify what games are being played in which channel at a glance
 * Game statistics tracking - Provides insights for server operators as to what games are popular
@@ -18,7 +18,7 @@ The bot is currently under heavy development, and as such I don't reccommend run
 heavy traffic environment unless you plan on dealing with the pain and suffering that will ensue.
 
 The bot is not designed to be connected to multiple servers at this time, so if you want the bot to be in different
-servers, you'll need to run multiple bots.
+servers, you'll need to run multiple instances.
 
 Make sure you have at least the following installed:
 
@@ -36,5 +36,5 @@ updated docs!
 tables, sequences and roles is set appropriately for what you set in the env file.
 5. Start the bot with `node index.js` and pray.
 
-To test the bot with eslint run `npm run test`. This will run eslint over all the code. If you'd rather run this test
-and then launch the bot run `npm run dev` which will do this for you as well.
+To test the bot with eslint run `yarn test`. This will run eslint over all the code. If you'd rather run this test
+and then launch the bot run `yarn run dev` which will do this for you as well.

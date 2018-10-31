@@ -1,6 +1,5 @@
 node_modules/
 .env
-sgs_bot.log
 omnium.log
 package-lock.json
 
