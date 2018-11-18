@@ -17,18 +17,32 @@ if (process.env.FEAT_STATS) {
       let args = textHelpers.getArgs(message.content);
       let data = [];
 
+      // calling patterns for this command:
+      // P1: game_stats <gamename: word>
+      // P2: game_stats <gamename: word> <limit: number>
+      // P3: game_stats <limit: number>
+      // P4: game_stats
+
       if (isNaN(args[1]) && typeof args[1] !== 'undefined') {
+        // we are pattern P1 or P2
+        let limit = 20;
+        if (!isNaN(args[2])) {
+          // handle P2, get the limit
+          limit = Math.min(20, parseInt(args[2]));
+        }
         data = await database.getUserStatisticsForGame(
           userId,
-          args[1].replace(/["']/g, ''),
-          args[2]
+          args[1].replace(/["']/g, ''), // remove any quotes there may be
+          limit
         );
       } else {
-        if (typeof args[1] !== 'undefined') {
-          data = await database.getUserGameStatistics(userId, parseInt(args[1]));
-        } else {
-          data = await database.getUserGameStatistics(userId, 10);
+        // P3 or P4
+        let limit = 10;
+        if (typeof args[1] !== 'undefined' && !isNaN(args[1])) {
+          // P3, get limit
+          limit = Math.min(20, parseInt(args[1]));
         }
+        data = await database.getUserGameStatistics(userId, limit);
       }
 
       if (data.length > 0) {
