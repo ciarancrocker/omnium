@@ -11,9 +11,13 @@ module.exports = async function(oldM, newM) {
   const userConsented = await userHelpers.hasUserConsented(oldM.user);
   if (!userConsented) return;
 
+  logger.log('debug', 'Presence event fired', {uid: oldM.id, old: oldM.presence, new: newM.presence});
+
   // if the game the member is playing has changed, update sessions accordingly
   if (!oldM.presence.equals(newM.presence)) {
+    logger.log('debug', 'Presence has changed', {uid: oldM.id});
     if (oldM.presence.game && newM.presence.game && oldM.presence.game.equals(newM.presence.game)) {
+      logger.log('debug', 'Presence changed but game did not.', {uid: oldM.id, old: oldM.presence.game, new: newM.presence.game});
       // the presence has changed but the game has not
       return;
     }
