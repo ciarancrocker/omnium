@@ -29,7 +29,8 @@ async function updateChannel(channel) {
     const channelMembers = channel.members.array();
     let channelName = channelQuery.rows[0].name;
     if (channelMembers.length > 0) {
-      const presences = channelMembers.filter((m) => m.presence.game).map((m) => m.presence.game.name);
+      const presences = channelMembers.filter((m) => m.presence.game && m.presence.game.type === 0)
+        .map((m) => m.presence.game.name);
       logger.debug(channelMembers.map((m) => m.presence.game));
       if (presences.length > 0) {
         const modalGame = mode(presences);
