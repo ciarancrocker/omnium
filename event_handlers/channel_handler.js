@@ -73,7 +73,7 @@ async function generateChannelLists(guild) {
   const emptyManagedChannels = managedChannels.filter((mch) =>
     guild.channels.get(mch.discord_id).members.array().length == 0);
   const emptyTemporaryChannels = emptyManagedChannels.filter((emch) => emch.temporary).reverse();
-  return {emptyManagedChannels, emptyTemporaryChannels};
+  return {managedChannels, emptyManagedChannels, emptyTemporaryChannels};
 }
 
 /**
@@ -89,7 +89,12 @@ async function provisionTemporaryChannels(guild) {
   }
 
   // first lets figure out if we need a temporary channels
-  let {emptyManagedChannels, emptyTemporaryChannels} = await generateChannelLists(guild);
+  let {managedChannels, emptyManagedChannels, emptyTemporaryChannels} = await generateChannelLists(guild);
+
+  if (managedChannels.length == 0) {
+    logger.log('debug', 'No managed channels are configured, skipping processing.');
+    return;
+  }
 
   logger.log('debug', `${emptyManagedChannels.length} empty managed channels`);
   if (emptyManagedChannels.length == 0) {
