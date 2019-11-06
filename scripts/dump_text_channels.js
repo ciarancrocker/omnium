@@ -15,7 +15,7 @@ const client = new djs.Client();
   const channels = guild.channels.array();
   const textChannels = channels.filter((x) => x.type == 'text');
   console.log(`${textChannels.length} channels to process`);
-  for (let channel of textChannels) {
+  for (const channel of textChannels) {
     await saveChannelLog(channel);
   }
   console.log('We\'re done!');

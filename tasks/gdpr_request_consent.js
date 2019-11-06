@@ -6,12 +6,12 @@ const userHelpers = require('../lib/user_helpers');
 // their consent to store data requested under GDPR, the DM to do so is sent.
 module.exports = async function(client) {
   logger.info('Running GDPR consent request task');
-  let dmUsers = [];
-  for (let guild of client.guilds.array()) {
+  const dmUsers = [];
+  for (const guild of client.guilds.array()) {
     logger.debug(`Processing users for guild ${guild.name}`);
     await guild.fetchMembers();
     // get the users
-    for (let member of guild.members.array()) {
+    for (const member of guild.members.array()) {
       // if the user is not in the db, add them
       const {user} = member;
       if (user.bot) {
@@ -35,7 +35,7 @@ module.exports = async function(client) {
   }
 
   logger.info(`Requesting user consent from ${dmUsers.length} users`);
-  for (let user of dmUsers) {
+  for (const user of dmUsers) {
     try {
       logger.debug(`Sending DM to ${user.tag} for GDPR`);
       await userHelpers.sendGdprRequest(user);

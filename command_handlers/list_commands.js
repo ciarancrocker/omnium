@@ -10,7 +10,7 @@ if (process.env.FEAT_STATIC_COMMANDS) {
       if (commands.length > 0) {
         const table = new Table();
         table.setHeading('Command');
-        for (let command of commands) {
+        for (const command of commands) {
           table.addRow(command.command);
         }
         textHelpers.paginateMessage(message, table.toString());

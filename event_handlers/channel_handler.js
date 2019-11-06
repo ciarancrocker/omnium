@@ -9,8 +9,8 @@ const logger = require('../lib/logging');
  */
 function mode(arr) {
   return arr.sort((a, b) =>
-    arr.filter((v) => v===a).length
-    - arr.filter((v) => v===b).length
+    arr.filter((v) => v===a).length -
+    arr.filter((v) => v===b).length,
   ).pop();
 }
 
@@ -30,7 +30,7 @@ async function updateChannel(channel) {
     let channelName = channelQuery.rows[0].name;
     if (channelMembers.length > 0) {
       const presences = channelMembers.filter((m) => m.presence.game && m.presence.game.type === 0)
-        .map((m) => m.presence.game.name);
+          .map((m) => m.presence.game.name);
       logger.debug(channelMembers.map((m) => m.presence.game));
       if (presences.length > 0) {
         const modalGame = mode(presences);
@@ -167,7 +167,7 @@ function updateChannelsForGuild(guild) {
   logger.log('info', `Updating channels for guild ${guild.name}`, guild.name);
   if (guild.available) {
     const channels = guild.channels.array();
-    for (let channel of channels) {
+    for (const channel of channels) {
       updateChannel(channel);
     }
   }

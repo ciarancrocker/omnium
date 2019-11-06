@@ -31,7 +31,7 @@ client.on('ready', async function() {
   if (process.env.DISCORD_LOG_CHANNEL) {
     const now = new Date();
     client.channels.get(process.env.DISCORD_LOG_CHANNEL)
-      .send(`Omnium was restarted. Initialisation completed at ${now.toISOString()}`);
+        .send(`Omnium was restarted. Initialisation completed at ${now.toISOString()}`);
   }
 });
 

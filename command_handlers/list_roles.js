@@ -9,18 +9,18 @@ if (process.env.FEAT_ROLES) {
     handler: async function(message) {
       if (!message.guild) {
         await messageHelpers.sendError(message,
-          'This command must be run within a server.');
+            'This command must be run within a server.');
         return;
       }
 
       const roleIds = await db.pool
-        .query('SELECT discord_id FROM bot_roles');
+          .query('SELECT discord_id FROM bot_roles');
       const guildRoles = message.guild.roles.array();
       let roleNames = [];
-      for (let roleId of roleIds.rows) {
+      for (const roleId of roleIds.rows) {
         const roleName = guildRoles
-          .filter((el) => el.id == roleId.discord_id)
-          .map((el) => el.name);
+            .filter((el) => el.id == roleId.discord_id)
+            .map((el) => el.name);
         if (roleName.length > 0) {
           roleNames.push(roleName[0]);
         }
@@ -28,7 +28,7 @@ if (process.env.FEAT_ROLES) {
       roleNames = roleNames.sort();
       if (roleNames.length > 0) {
         const table = new Table();
-        for (let role of roleNames) {
+        for (const role of roleNames) {
           table.addRow(role, `${process.env.COMMAND_PREFIX}join_role ${role}`);
         }
 

@@ -1,7 +1,7 @@
 module.exports = {
   extends: 'google',
   parserOptions: {
-    ecmaVersion: 2017,
+    ecmaVersion: 2018,
     ecmaFeatures: {
       experimentalObjectRestSpread: true,
     },

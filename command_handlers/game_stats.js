@@ -12,7 +12,7 @@ if (process.env.FEAT_STATS) {
   module.exports = {
     bind: 'game_stats',
     handler: async function(message) {
-      let args = textHelpers.getArgs(message.content);
+      const args = textHelpers.getArgs(message.content);
       let data = [];
 
       // calling patterns for this command:
@@ -29,8 +29,8 @@ if (process.env.FEAT_STATS) {
           limit = Math.min(20, parseInt(args[2]));
         }
         data = await database.getStatisticsForGame(
-          args[1].replace(/["']/g, ''), // remove any quotes there may be
-          limit
+            args[1].replace(/["']/g, ''), // remove any quotes there may be
+            limit,
         );
       } else {
         // P3 or P4
