@@ -29,9 +29,12 @@ async function updateChannel(channel) {
     const channelMembers = channel.members.array();
     let channelName = channelQuery.rows[0].name;
     if (channelMembers.length > 0) {
-      const presences = channelMembers.filter((m) => m.presence.game && m.presence.game.type === 0)
-        .map((m) => m.presence.game.name);
-      logger.debug(channelMembers.map((m) => m.presence.game));
+      const presences = channelMembers
+	    .map((m) => m.presence.activities)
+	    .reduce((a, b) => Array.isArray(b) ? [...a, ...b] : a, [])
+	    .map((x) => x.name)
+	    .filter((x) => x != 'Custom Status');
+      logger.debug(presences);
       if (presences.length > 0) {
         const modalGame = mode(presences);
         channelName = `${channelName} (${modalGame})`;
