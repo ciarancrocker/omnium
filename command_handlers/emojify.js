@@ -16,7 +16,7 @@ if (process.env.FEAT_UTIL) {
       }
 
       // get the message before this one
-      const messageBeforeLast = (await message.channel.fetchMessages({
+      const messageBeforeLast = (await message.channel.messages.fetch({
         limit: 1,
         before: message.id,
       })).first();
@@ -24,13 +24,13 @@ if (process.env.FEAT_UTIL) {
       // 0x1F1E6 == 🇦
       const baseEmojiId = parseInt('1F1E6', 16);
 
+      await message.delete();
+
       for (const character of word) {
         if (character != ' ') {
           await messageBeforeLast.react(punycode.ucs2.encode([baseEmojiId + alphabet.indexOf(character)]));
         }
       }
-
-      await message.delete();
     },
     help: 'React to the previous message with some emoji',
   };

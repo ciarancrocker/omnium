@@ -22,7 +22,7 @@ client.on('ready', async function() {
   logger.log('info', `Using ${process.env.COMMAND_PREFIX} as prefix for commands`);
   // fire off an update for all channels in case they've gotten inconsistent
   logger.log('info', 'Performing initial channel scan');
-  client.guilds.array().forEach((guild) => channelHandler.updateChannelsForGuild(guild));
+  client.guilds.cache.array().forEach((guild) => channelHandler.updateChannelsForGuild(guild));
 
   // set up recurring functions now
   setInterval(() => serverStatsTask(client), 5 * 60 * 1000); // 5 minutes
@@ -30,7 +30,7 @@ client.on('ready', async function() {
   // send reboot message to log channel if configured
   if (process.env.DISCORD_LOG_CHANNEL) {
     const now = new Date();
-    client.channels.get(process.env.DISCORD_LOG_CHANNEL)
+    client.channels.cache.get(process.env.DISCORD_LOG_CHANNEL)
         .send(`Omnium was restarted. Initialisation completed at ${now.toISOString()}`);
   }
 });

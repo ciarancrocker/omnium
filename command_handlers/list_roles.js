@@ -8,14 +8,12 @@ if (process.env.FEAT_ROLES) {
     bind: 'list_roles',
     handler: async function(message) {
       if (!message.guild) {
-        await messageHelpers.sendError(message,
-            'This command must be run within a server.');
+        await messageHelpers.sendError(message, 'This command must be run within a server.');
         return;
       }
 
-      const roleIds = await db.pool
-          .query('SELECT discord_id FROM bot_roles');
-      const guildRoles = message.guild.roles.array();
+      const roleIds = await db.pool.query('SELECT discord_id FROM bot_roles');
+      const guildRoles = message.guild.roles.cache.array();
       let roleNames = [];
       for (const roleId of roleIds.rows) {
         const roleName = guildRoles

@@ -12,7 +12,7 @@ if (process.env.FEAT_ROLES) {
       }
 
       const roleName = message.content.split(' ').slice(1).join(' ').toLowerCase();
-      const userRoles = message.member.roles.array().filter((el) => el.name.toLowerCase() == roleName);
+      const userRoles = message.member.roles.cache.array().filter((el) => el.name.toLowerCase() == roleName);
       if (userRoles.length == 0) {
         await messageHelpers.sendError(message, 'You\'re not a member of that role.');
         return;
@@ -25,7 +25,7 @@ if (process.env.FEAT_ROLES) {
         return;
       }
 
-      await message.member.removeRole(userRoles[0]);
+      await message.member.roles.remove(userRoles[0]);
       const outMessage = await message.reply(`You were removed from the role ${userRoles[0].name}`);
       logger.log('info', `User ${message.author.tag} was removed from the role ${userRoles[0].name}`);
 

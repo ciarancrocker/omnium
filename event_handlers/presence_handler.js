@@ -3,42 +3,52 @@ const database = require('../lib/database');
 const logger = require('../lib/logging');
 const userHelpers = require('../lib/user_helpers');
 
-module.exports = async function(oldM, newM) {
+module.exports = async function(oldP, newP) {
   if (!process.env.FEAT_STATS) return;
+
+  const {user} = newP;
+
   // don't interact with other bots
-  if (oldM.user.bot) return;
+  if (user.bot) return;
   // GDPR compliance; ignore the user's actions if they have not consented
-  const userConsented = await userHelpers.hasUserConsented(oldM.user);
+  const userConsented = await userHelpers.hasUserConsented(user);
   if (!userConsented) return;
 
-  logger.log('debug', 'Presence event fired', {uid: oldM.id, old: oldM.presence, new: newM.presence});
+  logger.log('debug', 'Presence event fired', {uid: user.id, old: oldP, new: newP});
 
-  // if the game the member is playing has changed, update sessions accordingly
-  if (!oldM.presence.equals(newM.presence)) {
-    logger.log('debug', 'Presence has changed', {uid: oldM.id});
-    if (oldM.presence.game && newM.presence.game && oldM.presence.game.equals(newM.presence.game)) {
-      logger.log('debug', 'Presence changed but game did not.', {uid: oldM.id, old: oldM.presence.game, new: newM.presence.game});
-      // the presence has changed but the game has not
-      return;
+  const oldActivities = oldP.activities || []; // oldP can be undefined/null here
+  const newActivities = newP.activities;
+
+  for (const oldActivity of oldActivities) {
+    // first we check each oldActivity to see if it's in newActivities
+    // if not the user has _stopped_ that activity in this event
+    if (!newActivities.some((x) => x.name == oldActivity.name)) {
+      logger.log('info', `User ${user.tag} stopped activity ${oldActivity.name}`);
+      if (oldActivity.type == 'PLAYING') {
+        const userId = await database.findOrCreateUser(user);
+        const gameId = await database.findOrCreateGame(oldActivity.name);
+        await database.endSession(userId, gameId);
+      }
     }
-    if (oldM.presence.game != null && oldM.presence.game.name != null && oldM.presence.game.type === 0) {
-      // user finished session
-      logger.log('info', `User ${oldM.user.tag} stopped playing ${oldM.presence.game.name}`);
-      const userId = await database.findOrCreateUser(oldM.user);
-      const gameId = await database.findOrCreateGame(oldM.presence.game.name);
-      await database.endSession(userId, gameId);
+  }
+
+  for (const newActivity of newActivities) {
+    // then we check each newActivity to see if it's oldActivities
+    // if not the user has _started_ that activity in this event
+    if (!oldActivities.some((x) => x.name == newActivity.name)) {
+      logger.log('info', `User ${user.tag} started activity ${newActivity.name}`);
+      if (newActivity.type == 'PLAYING') {
+        const userId = await database.findOrCreateUser(user);
+        const gameId = await database.findOrCreateGame(newActivity.name);
+        await database.createNewSession(userId, gameId);
+      }
     }
-    if (newM.presence.game != null && newM.presence.game.name != null && newM.presence.game.type === 0) {
-      // user starting session
-      logger.log('info', `User ${newM.user.tag} started playing ${newM.presence.game.name}`);
-      const userId = await database.findOrCreateUser(newM.user);
-      const gameId = await database.findOrCreateGame(newM.presence.game.name);
-      await database.createNewSession(userId, gameId);
-    }
-    // also update the voice channel the user is in if they're in one
-    if (newM.voiceChannel) {
-      channelHandler.updateChannel(newM.voiceChannel);
-    }
-    return;
+  }
+
+  // if the user is in a voice channel we should probably update that channel too
+  const channel = newP.member.voice.channel;
+  if (channel) {
+    logger.log('debug', `Requesting channel update for channel ${channel.name} (${channel.id}) due to presence update`);
+    channelHandler.updateChannel(channel);
   }
 };

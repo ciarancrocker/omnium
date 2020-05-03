@@ -12,10 +12,12 @@ if (process.env.FEAT_ROLES) {
       }
 
       const roleName = message.content.split(' ').slice(1).join(' ');
-      const newRole = await message.guild.createRole({
-        name: roleName,
-        hoist: false,
-        mentionable: true,
+      const newRole = await message.guild.roles.create({
+        data: {
+          name: roleName,
+          hoist: false,
+          mentionable: true,
+        },
       });
 
       await db.pool.query('INSERT INTO bot_roles (discord_id) VALUES ($1)', [newRole.id]);

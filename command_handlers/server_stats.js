@@ -1,17 +1,17 @@
 const db = require('../lib/database');
-const {RichEmbed} = require('discord.js');
+const {MessageEmbed} = require('discord.js');
 
 module.exports = {
   bind: 'server_stats',
   handler: async function(message) {
     const {rows: aggregateStats} = await db.pool.query('SELECT max(total_members) as max_members, max(online_members) as max_online_members FROM server_statistics');
 
-    const guild = message.client.guilds.first();
-    await guild.fetchMembers();
-    const members = guild.members.array();
+    const guild = message.guild;
+    await guild.members.fetch();
+    const members = guild.members.cache.array();
     const onlineMembers = members.filter((x) => x.presence.status != 'offline');
 
-    const embed = new RichEmbed();
+    const embed = new MessageEmbed();
     embed.setTitle('Aggregate server statistics')
         .addField('Current total members', members.length, true)
         .addField('Peak total members', aggregateStats[0].max_members, true)

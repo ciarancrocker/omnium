@@ -52,6 +52,7 @@ if (process.env.FEAT_STATS) {
           table.addRow([(i+1), data[i].display_name, formatInterval(data[i].time)]);
         }
         textHelpers.paginateMessageToFunction(message.author.send.bind(message.author), table.toString());
+        await message.delete();
       } else {
         await message.reply('Not enough information gathered. Check back later.');
       }

@@ -12,7 +12,7 @@ if (process.env.FEAT_ROLES) {
       }
 
       const roleName = message.content.split(' ').slice(1).join(' ').toLowerCase();
-      const roles = message.guild.roles.array().filter((el) => el.name.toLowerCase() == roleName);
+      const roles = message.guild.roles.cache.array().filter((el) => el.name.toLowerCase() == roleName);
       if (roles.length == 0) {
         await messageHelpers.sendError(message, 'The specified role does not exist.');
         return;

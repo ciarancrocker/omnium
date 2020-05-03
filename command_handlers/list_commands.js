@@ -8,6 +8,7 @@ if (process.env.FEAT_STATIC_COMMANDS) {
     handler: async function(message) {
       const commands = await db.getAllStaticCommands();
       if (commands.length > 0) {
+        commands.sort((a, b) => a.command.toLowerCase() < b.command.toLowerCase() ? -1 : 1);
         const table = new Table();
         table.setHeading('Command');
         for (const command of commands) {

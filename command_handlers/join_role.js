@@ -12,7 +12,7 @@ if (process.env.FEAT_ROLES) {
       }
 
       const roleName = message.content.split(' ').slice(1).join(' ').toLowerCase();
-      const roles = message.guild.roles.array().filter((el) => el.name.toLowerCase() == roleName);
+      const roles = message.guild.roles.cache.array().filter((el) => el.name.toLowerCase() == roleName);
       if (roles.length == 0) {
         await messageHelpers.sendError(message, 'The specified role does not exist.');
         return;
@@ -25,7 +25,7 @@ if (process.env.FEAT_ROLES) {
         return;
       }
 
-      await message.member.addRole(roles[0].id);
+      await message.member.roles.add(roles[0].id);
       const outMessage = await message.reply(`You were added to the role ${roleName}`);
       logger.log('info', `User ${message.author.tag} was added to the role ${roleName}`);
 
