@@ -16,7 +16,7 @@ module.exports = async function(oldP, newP) {
 
   logger.log('debug', 'Presence event fired', {uid: user.id, old: oldP, new: newP});
 
-  const oldActivities = oldP.activities || []; // oldP can be undefined/null here
+  const oldActivities = oldP ? oldP.activities : []; // oldP can be undefined/null here
   const newActivities = newP.activities;
 
   for (const oldActivity of oldActivities) {
