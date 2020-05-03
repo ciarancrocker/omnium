@@ -24,7 +24,7 @@ if (process.env.FEAT_UTIL) {
       // 0x1F1E6 == 🇦
       const baseEmojiId = parseInt('1F1E6', 16);
 
-      for (let character of word) {
+      for (const character of word) {
         if (character != ' ') {
           await messageBeforeLast.react(punycode.ucs2.encode([baseEmojiId + alphabet.indexOf(character)]));
         }

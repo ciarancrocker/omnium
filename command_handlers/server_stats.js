@@ -13,11 +13,11 @@ module.exports = {
 
     const embed = new RichEmbed();
     embed.setTitle('Aggregate server statistics')
-      .addField('Current total members', members.length, true)
-      .addField('Peak total members', aggregateStats[0].max_members, true)
-      .addField('Current online members', onlineMembers.length, true)
-      .addField('Peak online members', aggregateStats[0].max_online_members, true)
-      .setColor(0x004d00);
+        .addField('Current total members', members.length, true)
+        .addField('Peak total members', aggregateStats[0].max_members, true)
+        .addField('Current online members', onlineMembers.length, true)
+        .addField('Peak online members', aggregateStats[0].max_online_members, true)
+        .setColor(0x004d00);
     await message.channel.send(embed);
   },
   administrative: true,

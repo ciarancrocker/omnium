@@ -14,7 +14,7 @@ if (process.env.FEAT_STATS) {
     handler: async function(message) {
       const userId = await database.findOrCreateUser(message.author);
 
-      let args = textHelpers.getArgs(message.content);
+      const args = textHelpers.getArgs(message.content);
       let data = [];
 
       // calling patterns for this command:
@@ -31,9 +31,9 @@ if (process.env.FEAT_STATS) {
           limit = Math.min(20, parseInt(args[2]));
         }
         data = await database.getUserStatisticsForGame(
-          userId,
-          args[1].replace(/["']/g, ''), // remove any quotes there may be
-          limit
+            userId,
+            args[1].replace(/["']/g, ''), // remove any quotes there may be
+            limit,
         );
       } else {
         // P3 or P4

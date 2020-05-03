@@ -7,7 +7,7 @@ const textHelpers = require('../lib/text_helpers');
 const logger = require('../lib/logging');
 
 // load all the command handlers
-let commandHandlers = [];
+const commandHandlers = [];
 const commandHandlerLoadPath = path.resolve(process.cwd(), './command_handlers');
 logger.log('debug', `Loading commands from ${commandHandlerLoadPath}`);
 fs.readdir(commandHandlerLoadPath, function(err, files) {
@@ -37,7 +37,7 @@ fs.readdir(commandHandlerLoadPath, function(err, files) {
       const table = new Table();
       table.setHeading('Command', 'Help');
       table.setTitle('Omnium help');
-      for (let handler of commandHandlers) {
+      for (const handler of commandHandlers) {
         if (!handler.administrative || userIsAdmin) {
           if (handler.help) {
             table.addRow(handler.bind, handler.help);
