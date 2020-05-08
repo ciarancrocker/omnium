@@ -141,7 +141,7 @@ async function provisionTemporaryChannels(guild) {
  * @param {VoiceState} before - Member before the update
  * @param {VoiceState} after - Member after the update
  */
-function handleVoiceStateUpdate(before, after) {
+async function handleVoiceStateUpdate(before, after) {
   if (!process.env.FEAT_CHANNELS) {
     return;
   }
@@ -151,6 +151,18 @@ function handleVoiceStateUpdate(before, after) {
   }
   if (after.channel != null) {
     updateChannel(after.channel);
+  }
+
+  // handle join order recording
+  if (before.channel != after.channel) {
+    if (before.channel) {
+      await db.leaveChannel(before.id);
+      logger.log('info', `${before.member.user.tag} left channel ${before.channel.name}`);
+    }
+    if (after.channel) {
+      await db.joinChannel(after.channel.id, after.id);
+      logger.log('info', `${after.member.user.tag} joined channel ${after.channel.name}`);
+    }
   }
 
   // do temporary channels
