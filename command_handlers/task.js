@@ -4,8 +4,8 @@ module.exports = {
     const argv = message.content.split(' ');
     if (argv.length < 2) {
       const errorMessage = await message.reply('No task specified.');
-      message.delete(5000);
-      errorMessage.delete(5000);
+      message.delete({timeout: 5000});
+      errorMessage.delete({timeout: 5000});
       return;
     }
     const taskName = argv[1];
@@ -16,8 +16,8 @@ module.exports = {
       await message.reply('Task run completed successfully');
     } catch (e) {
       const errorMessage = await message.reply('Error running task, see logs for information');
-      message.delete(5000);
-      errorMessage.delete(5000);
+      message.delete({timeout: 5000});
+      errorMessage.delete({timeout: 5000});
       return;
     }
   },

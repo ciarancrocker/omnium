@@ -30,8 +30,8 @@ if (process.env.FEAT_ROLES) {
       logger.log('info', `User ${message.author.tag} was removed from the role ${userRoles[0].name}`);
 
       // self destruct messages
-      message.delete(5000);
-      outMessage.delete(5000);
+      message.delete({timeout: 5000});
+      outMessage.delete({timeout: 5000});
 
       // log the event
       db.logEvent('leave_role', {user_id: message.member.id, role: roleName});
