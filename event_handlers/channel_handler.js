@@ -113,7 +113,7 @@ async function provisionTemporaryChannels(guild) {
     const newChannel = await guild.channels.create(channelName, {
       type: 'voice',
       parent: newestChannel.parent,
-      position: newestChannel.position + 1,
+      position: newestChannel.position,
     });
     // insert it in the db
     await db.createChannel(newChannel, channelNumber);
