@@ -1,6 +1,8 @@
-# Omnium
+# Deprecation warning
+The code in this repository is no longer under active maintenance, and as such may not be functional, secure or fit for purpose.
+Deploy and use at your own risk.
 
-[![Build Status](https://travis-ci.org/ciarancrocker/omnium.svg?branch=develop)](https://travis-ci.org/ciarancrocker/omnium)
+# Omnium
 
 A Discord bot made for the [Swansea Gaming Society](https://sugaming.co.uk). Includes features like:
 
